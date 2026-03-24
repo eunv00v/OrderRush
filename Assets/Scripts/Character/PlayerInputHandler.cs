@@ -5,6 +5,7 @@ using System.Threading;
 using Services.UpdateService;
 using UnityEngine.EventSystems;
 using VContainer;
+using UnityEngine.AI;
 
 public class PlayerInputHandler : MonoBehaviour, IUpdatable
 {
@@ -50,15 +51,30 @@ public class PlayerInputHandler : MonoBehaviour, IUpdatable
         var mouse = Mouse.current;
         if (mouse == null) return;
         if (!mouse.leftButton.wasPressedThisFrame) return;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
         var ray = _mainCamera.ScreenPointToRay(mouse.position.ReadValue());
-        if (Physics.Raycast(ray, out var hit, 100f, _groundLayer))
+
+        // IInteractable 먼저 체크
+        if (Physics.Raycast(ray, out var hit, 100f))
         {
-            if (UnityEngine.AI.NavMesh.SamplePosition(hit.point, out var navHit, 1f, UnityEngine.AI.NavMesh.AllAreas))
+            var interactable = hit.collider.GetComponentInParent<IInteractable>();
+            if (interactable != null)
+            {
+                InteractWith(interactable);
+                return;
+            }
+        }
+
+        // 바닥 이동
+        if (Physics.Raycast(ray, out var groundHit, 100f, _groundLayer))
+        {
+            if (NavMesh.SamplePosition(groundHit.point, out var navHit, 1f, NavMesh.AllAreas))
                 MoveToPosition(navHit.position);
         }
     }
+
+
 
     void HandleTouchInput()
     {
@@ -74,6 +90,21 @@ public class PlayerInputHandler : MonoBehaviour, IUpdatable
             if (UnityEngine.AI.NavMesh.SamplePosition(hit.point, out var navHit, 1f, UnityEngine.AI.NavMesh.AllAreas))
                 MoveToPosition(navHit.position);
         }
+    }
+
+    async void InteractWith(IInteractable interactable)
+    {
+        var interactPoint = interactable.InteractPoint;
+
+        if (!NavMesh.SamplePosition(interactPoint.position, out var navHit, 0.5f, NavMesh.AllAreas))
+        {
+            Debug.Log("이동 불가");
+            return;
+        }
+
+        CancelMove();
+        await _mover.MoveToAsync(navHit.position, _cts.Token);
+        await interactable.InteractAsync(_cts.Token);
     }
 
     void MoveToPosition(Vector3 position)
