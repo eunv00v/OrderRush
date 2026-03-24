@@ -1,14 +1,11 @@
 // Scripts/Core/GameBootstrap.cs
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VContainer.Unity;
 
-public class GameBootstrap : MonoBehaviour
+public class Launcher : MonoBehaviour
 {
-    void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-    void Start()
+    public void Start()
     {
         SceneManager.LoadScene("Gameplay");
     }

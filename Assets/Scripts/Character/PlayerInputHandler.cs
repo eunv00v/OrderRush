@@ -3,8 +3,8 @@ using UnityEngine.InputSystem;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using Services.UpdateService;
-using VContainer;
 using UnityEngine.EventSystems;
+using VContainer;
 
 public class PlayerInputHandler : MonoBehaviour, IUpdatable
 {
@@ -50,7 +50,7 @@ public class PlayerInputHandler : MonoBehaviour, IUpdatable
         var mouse = Mouse.current;
         if (mouse == null) return;
         if (!mouse.leftButton.wasPressedThisFrame) return;
-        if (EventSystem.current.IsPointerOverGameObject()) return; // UI 클릭 방지
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
         var ray = _mainCamera.ScreenPointToRay(mouse.position.ReadValue());
         if (Physics.Raycast(ray, out var hit, 100f, _groundLayer))
