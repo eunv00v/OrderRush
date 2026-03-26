@@ -21,7 +21,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
     protected IngredientContext _currentIngredient;
     private CookingProcess _cookingProcess;
 
-    public event Action<CookingToolBase, CookingStep> OnCookingCompleted;
+    public event Action<CookingToolBase, IngredientState> OnCookingCompleted;
 
     public abstract string DisplayName { get; }
     public Transform InteractPoint => _interactPoint;
@@ -76,7 +76,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
         return ingredientModel;
     }
 
-    protected void StartCookingTimer(CookingStep step)
+    protected void StartCookingTimer(CookableAbility ability)
     {
         if (_cookingProcess != null)
         {
@@ -85,12 +85,13 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
 
         _cookingProcess = new CookingProcess
         {
-            Step = step,
+            Duration = ability.cookDuration,
+            ResultState = ability.resultState,
             Cts = new CancellationTokenSource(),
             ElapsedTime = 0f
         };
 
-        _cookingService?.StartCooking(this, step);
+        _cookingService?.StartCooking(this);
         CookAsync(_cookingProcess).Forget();
     }
 
@@ -114,17 +115,16 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
     private async UniTask CookAsync(CookingProcess process)
     {
         var ct = process.Cts.Token;
-        var step = process.Step;
 
         try
         {
-            while (process.ElapsedTime < step.duration)
+            while (process.ElapsedTime < process.Duration)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 process.ElapsedTime += Time.deltaTime;
             }
 
-            OnCookingCompleted?.Invoke(this, step);
+            OnCookingCompleted?.Invoke(this, process.ResultState);
         }
         catch (OperationCanceledException)
         {

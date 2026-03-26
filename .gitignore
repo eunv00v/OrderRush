@@ -100,3 +100,5 @@ InitTestScene*.unity*
 *.slnx
 Assets/Scripts/Services/.DS_Store
 /.vscode
+Assets/.DS_Store
+Assets/.DS_Store

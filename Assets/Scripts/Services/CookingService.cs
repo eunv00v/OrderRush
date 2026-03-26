@@ -19,11 +19,11 @@ public class CookingService : ICookingService
         tool.OnCookingCompleted -= OnToolCookingCompleted;
     }
 
-    private void OnToolCookingCompleted(CookingToolBase tool, CookingStep step)
+    private void OnToolCookingCompleted(CookingToolBase tool, IngredientState resultState)
     {
         if (tool.CurrentIngredient != null)
         {
-            tool.CurrentIngredient.State = step.resultState;
+            tool.CurrentIngredient.State = resultState;
             Debug.Log($"{tool.DisplayName} 조리 완료! {tool.CurrentIngredient}");
         }
 
@@ -63,14 +63,10 @@ public class CookingService : ICookingService
         }
     }
 
-    public void StartCooking(CookingToolBase tool, CookingStep step)
+    public void StartCooking(CookingToolBase tool)
     {
-        _activeCookings[tool] = new CookingProcess
-        {
-            Step = step,
-            Cts = null,
-            ElapsedTime = 0f
-        };
+        // CookingProcess는 CookingToolBase에서 생성되므로 여기서는 트래킹만 수행
+        // Duration과 ResultState는 이미 CookingToolBase의 CookingProcess에 설정됨
     }
 
     public void StopCooking(CookingToolBase tool)
