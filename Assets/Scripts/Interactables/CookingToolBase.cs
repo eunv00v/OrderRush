@@ -12,16 +12,12 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
     [Header("Interaction")]
     [SerializeField] protected Transform _interactPoint;
     [SerializeField] protected Transform _ingredientSlot;
+    [SerializeField] protected Canvas _canvas;
 
-    [Header("Debug")]
-    [SerializeField] protected IngredientData _initialIngredient;
-
-    [Inject] protected ICookingService _cookingService;
 
     protected IngredientContext _currentIngredient;
     private CookingProcess _cookingProcess;
-
-    public event Action<CookingToolBase, IngredientState> OnCookingCompleted;
+    public CookingToolModel Model { get; private set; }
 
     public abstract string DisplayName { get; }
     public Transform InteractPoint => _interactPoint;
@@ -31,21 +27,20 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
 
     protected virtual void Awake()
     {
-        if (_initialIngredient != null)
-        {
-            PlaceIngredient(_initialIngredient);
-        }
+        _canvas.worldCamera = Camera.main;
+        Model = new CookingToolModel();
     }
+
+
 
     protected virtual void Start()
     {
-        _cookingService?.RegisterTool(this);
     }
 
     protected virtual void OnDestroy()
     {
         StopCookingTimer();
-        _cookingService?.UnregisterTool(this);
+        Model?.Dispose();
     }
 
     public virtual void PlaceIngredient(IngredientData ingredient)
@@ -57,6 +52,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
         }
 
         _currentIngredient = new IngredientContext(ingredient);
+        Model.IngredientState.Value = _currentIngredient.State;
         Debug.Log($"[{DisplayName}] 재료 배치: {_currentIngredient}");
     }
 
@@ -71,7 +67,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
         var ingredientModel = _currentIngredient;
         _currentIngredient = null;
         StopCookingTimer();
-        _cookingService?.CancelBurn(this);
+        Model.IngredientState.Value = global::IngredientState.Raw;
         Debug.Log($"[{DisplayName}] 재료 제거: {ingredientModel}");
         return ingredientModel;
     }
@@ -85,25 +81,25 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
 
         _cookingProcess = new CookingProcess
         {
-            Duration = ability.cookDuration,
-            ResultState = ability.resultState,
+            Ability = ability,
             Cts = new CancellationTokenSource(),
             ElapsedTime = 0f
         };
 
-        _cookingService?.StartCooking(this);
+        Model.IsCooking.Value = true;
         CookAsync(_cookingProcess).Forget();
     }
 
     protected void StopCookingTimer()
     {
+        Debug.Log($"[StopCookingTimer]초");
         if (_cookingProcess != null)
         {
             _cookingProcess.Cts?.Cancel();
             _cookingProcess.Cts?.Dispose();
             _cookingProcess = null;
-
-            _cookingService?.StopCooking(this);
+            Model.IsCooking.Value = false;
+            Model.Progress.Value = 0f;
         }
     }
 
@@ -118,20 +114,41 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
 
         try
         {
-            while (process.ElapsedTime < process.Duration)
+            while (process.ElapsedTime < process.Ability.CookDuration)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 process.ElapsedTime += Time.deltaTime;
+                Model.Progress.Value = process.Progress;
             }
 
-            OnCookingCompleted?.Invoke(this, process.ResultState);
+            if (IsOccupied)
+            {
+                _currentIngredient.State = process.Ability.ResultState;
+                Model.IngredientState.Value = _currentIngredient.State;
+                Debug.Log($"[{DisplayName}] 조리 완료: {_currentIngredient}");
+            }
+
+            if (process.Ability.OverdueDelay > 0)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(process.Ability.OverdueDelay), cancellationToken: ct);
+                if (IsOccupied)
+                {
+                    _currentIngredient.State = process.Ability.ResultState;
+                    Model.IngredientState.Value = _currentIngredient.State;
+                    Debug.LogWarning($"[{DisplayName}] 과조리됨!");
+                }
+            }
+
         }
         catch (OperationCanceledException)
         {
+            Debug.Log($"[CookAsync]: 취소댐");
         }
         finally
         {
             _cookingProcess = null;
+            Model.IsCooking.Value = false;
+            Model.Progress.Value = 0f;
         }
     }
 

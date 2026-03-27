@@ -8,9 +8,12 @@ public class Stove : CookingToolBase
 
     public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
+        Debug.Log($"[Stove] InteractAsync 호출됨 - IsHolding: {character.IsHolding}, IsOccupied: {IsOccupied}");
+
         // 캐릭터가 재료 들고 있으면 올리기
         if (character.IsHolding && !IsOccupied)
         {
+            Debug.Log("[Stove] 재료 올리기 시도");
             var ingredientObject = character.PutDown() as IngredientObject;
             if (ingredientObject != null)
             {
@@ -18,8 +21,9 @@ public class Stove : CookingToolBase
                 ingredientObject.transform.localPosition = Vector3.zero;
                 PlaceIngredient(ingredientObject.Context.Data);
             }
-            return;
         }
+
+        Debug.Log($"[Stove] IsCooking: {IsCooking}, IsOccupied: {IsOccupied}");
 
         // 재료 없으면 무시
         if (!IsOccupied)
@@ -43,6 +47,7 @@ public class Stove : CookingToolBase
             return;
         }
 
+        Debug.Log($"[Stove] 조리 시작: {cookable.CookDuration}초");
         StartCookingTimer(cookable);
         await UniTask.CompletedTask;
     }

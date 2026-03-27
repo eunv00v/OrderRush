@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 069eeb918ab574c8b99fabfb7c643dd9, type: 3}
   m_Name: SteakMeat
   m_EditorClassIdentifier: Assembly-CSharp::Ingredient
-  ingredientName: SteakMeat
-  initialState: 0
-  icon: {fileID: 0}
-  prefab: {fileID: 6718803449404254426, guid: 106d4b7f4e3e64c34840701f9a2f1776, type: 3}
+  IngredientName: SteakMeat
+  InitialState: 0
+  Icon: {fileID: 0}
+  Prefab: {fileID: 6718803449404254426, guid: 106d4b7f4e3e64c34840701f9a2f1776, type: 3}
+  Abilities:
+  - {fileID: 11400000, guid: d623dd859e8614039b9d30a14baa54eb, type: 2}

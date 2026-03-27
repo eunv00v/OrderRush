@@ -8,8 +8,8 @@ using UnityEngine;
 public class SliceableAbility : IngredientAbility
 {
     [Tooltip("썰기 시간 (초)")]
-    public float sliceDuration;
+    public float SliceDuration;
 
     [Tooltip("썰기 후 상태")]
-    public IngredientState resultState = IngredientState.Processed;
+    public IngredientState ResultState = IngredientState.Processed;
 }

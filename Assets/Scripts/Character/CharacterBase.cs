@@ -4,11 +4,11 @@ public abstract class CharacterBase : MonoBehaviour
 {
     [SerializeField] Transform _itemSlot;
 
-    protected IHoldable _heldItem;
-    public bool IsHolding => _heldItem != null;
+    public bool IsHolding => CurrentCarriable != null;
+    public ICarriable CurrentCarriable { get; protected set; }
     public Transform ItemSlot => _itemSlot;
 
-    public virtual void PickUp(IHoldable item)
+    public virtual void PickUp(ICarriable item)
     {
         if (item == null)
         {
@@ -16,26 +16,26 @@ public abstract class CharacterBase : MonoBehaviour
             return;
         }
 
-        if (_heldItem != null)
+        if (CurrentCarriable != null)
         {
-            Debug.LogWarning($"[{gameObject.name}] Already holding an item: {_heldItem}");
+            Debug.LogWarning($"[{gameObject.name}] Already holding an item: {CurrentCarriable}");
             return;
         }
 
-        _heldItem = item;
+        CurrentCarriable = item;
         Debug.Log($"[{gameObject.name}] Picked up: {item}");
     }
 
-    public virtual IHoldable PutDown()
+    public virtual ICarriable PutDown()
     {
-        if (_heldItem == null)
+        if (CurrentCarriable == null)
         {
             Debug.LogWarning($"[{gameObject.name}] No item to put down");
             return null;
         }
 
-        var item = _heldItem;
-        _heldItem = null;
+        var item = CurrentCarriable;
+        CurrentCarriable = null;
         Debug.Log($"[{gameObject.name}] Put down: {item}");
         return item;
     }

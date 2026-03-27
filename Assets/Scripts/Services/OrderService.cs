@@ -17,7 +17,7 @@ public class OrderService : IOrderService
 
         var order = new Order(recipe, DEFAULT_TIME_LIMIT);
         _activeOrders.Add(order);
-        Debug.Log($"New order added: {recipe.recipeName} (Time limit: {DEFAULT_TIME_LIMIT}s)");
+        Debug.Log($"New order added: {recipe.RecipeName} (Time limit: {DEFAULT_TIME_LIMIT}s)!");
     }
 
     public void CompleteOrder(Order order)
@@ -32,7 +32,7 @@ public class OrderService : IOrderService
         {
             order.Complete();
             _activeOrders.Remove(order);
-            Debug.Log($"Order completed: {order.Recipe.recipeName}");
+            Debug.Log($"Order completed: {order.Recipe.RecipeName}");
         }
         else
         {

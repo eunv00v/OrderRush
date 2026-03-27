@@ -8,8 +8,10 @@ using UnityEngine;
 public class CookableAbility : IngredientAbility
 {
     [Tooltip("조리 시간 (초)")]
-    public float cookDuration;
+    public float CookDuration;
 
     [Tooltip("조리 후 상태")]
-    public IngredientState resultState = IngredientState.Cooked;
+    public IngredientState ResultState = IngredientState.Cooked;
+    public float OverdueDelay = 0f;
+
 }

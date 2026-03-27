@@ -2,7 +2,7 @@
 /// 런타임 재료 상태 관리
 /// ScriptableObject인 IngredientData는 데이터 정의만, 상태 변경은 Context에서 관리
 /// </summary>
-public class IngredientContext : IHoldable
+public class IngredientContext
 {
     public IngredientData Data { get; private set; }
     public IngredientState State { get; set; }
@@ -10,7 +10,7 @@ public class IngredientContext : IHoldable
     public IngredientContext(IngredientData data)
     {
         Data = data;
-        State = data.initialState;
+        State = data.InitialState;
     }
 
     public IngredientContext(IngredientData data, IngredientState state)
@@ -21,6 +21,6 @@ public class IngredientContext : IHoldable
 
     public override string ToString()
     {
-        return $"{Data.ingredientName} ({State})";
+        return $"{Data.IngredientName} ({State})";
     }
 }

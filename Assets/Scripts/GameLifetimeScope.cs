@@ -9,9 +9,7 @@ public class GameLifetimeScope : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         // Services
-        builder.Register<ICookingService, CookingService>(Lifetime.Singleton);
         builder.Register<IOrderService, OrderService>(Lifetime.Singleton);
-
         // Input Handler
         builder.RegisterEntryPoint<PlayerInputHandler>();
 
