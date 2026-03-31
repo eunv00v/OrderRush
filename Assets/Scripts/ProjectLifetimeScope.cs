@@ -3,7 +3,6 @@ using VContainer;
 using VContainer.Unity;
 using MessagePipe;
 using Services.UpdateService;
-using UnityEngine.SceneManagement;
 
 public class ProjectLifetimeScope : LifetimeScope
 {
@@ -12,8 +11,9 @@ public class ProjectLifetimeScope : LifetimeScope
     {
         builder.RegisterMessagePipe();
         builder.RegisterComponent(_updateService)
-               .AsImplementedInterfaces()
-               .AsSelf();
+               .As<IUpdateSubscriptionService>();
+        builder.Register<ResourcesLoaderService>(Lifetime.Singleton)
+               .As<IResourcesLoaderService>();
         builder.RegisterEntryPoint<Launcher>();
     }
 

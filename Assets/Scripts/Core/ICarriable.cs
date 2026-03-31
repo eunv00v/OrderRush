@@ -8,7 +8,7 @@ using UnityEngine;
 public interface ICarriable
 {
     void OnPlaced(Transform slot);
-    void OnPickedUp();
+    void OnPickedUp(Transform slot);
     bool CanReceive(ICarriable item);
     UniTask Receive(ICarriable item, CharacterBase character, CancellationToken ct);
 }

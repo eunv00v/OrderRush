@@ -1,11 +1,20 @@
-/// <summary>
-/// 런타임 재료 상태 관리
-/// ScriptableObject인 IngredientData는 데이터 정의만, 상태 변경은 Context에서 관리
-/// </summary>
+using System;
+
 public class IngredientContext
 {
     public IngredientData Data { get; private set; }
-    public IngredientState State { get; set; }
+    IngredientState _state;
+    public IngredientState State
+    {
+        get => _state;
+        set
+        {
+            _state = value;
+            OnStateChanged?.Invoke(_state);
+        }
+    }
+
+    public event Action<IngredientState> OnStateChanged;
 
     public IngredientContext(IngredientData data)
     {

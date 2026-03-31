@@ -38,12 +38,14 @@ public class PlayerCharacter : CharacterBase
 
     void OnMoveEvent(MoveEvent e)
     {
+        Debug.Log("OnMoveEvent");
         _actionExecutor.Clear();
         _actionExecutor.Enqueue(new MoveAction(_mover, e.Destination));
     }
 
     void OnInteractEvent(InteractEvent e)
     {
+        Debug.Log($"OnInteractEvent {e.Target}");
         _actionExecutor.Clear();
         _actionExecutor.Enqueue(new InteractAction(_mover, e.Target, this));
     }

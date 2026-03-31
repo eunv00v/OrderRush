@@ -23,6 +23,7 @@ public abstract class CharacterBase : MonoBehaviour
         }
 
         CurrentCarriable = item;
+
         Debug.Log($"[{gameObject.name}] Picked up: {item}");
     }
 

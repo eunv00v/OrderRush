@@ -8,11 +8,21 @@ using UnityEngine;
 /// </summary>
 public class IngredientObject : MonoBehaviour, ICarriable
 {
+    [SerializeField] MeshRenderer _meshRenderer;
+
     public IngredientContext Context { get; private set; }
 
     public void Initialize(IngredientData ingredient)
     {
         Context = new IngredientContext(ingredient);
+        Context.OnStateChanged += OnStateChanged;  // 상태 변경 구독
+        OnStateChanged(Context.State);
+    }
+
+    void OnDestroy()
+    {
+        if (Context != null)
+            Context.OnStateChanged -= OnStateChanged;
     }
 
     public void OnPlaced(Transform slot)
@@ -22,9 +32,11 @@ public class IngredientObject : MonoBehaviour, ICarriable
         transform.localRotation = Quaternion.identity;
     }
 
-    public void OnPickedUp()
+    public void OnPickedUp(Transform slot)
     {
-        transform.SetParent(null);
+        transform.SetParent(slot);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
     }
 
     public bool CanReceive(ICarriable item) => false;
@@ -32,5 +44,14 @@ public class IngredientObject : MonoBehaviour, ICarriable
     public async UniTask Receive(ICarriable item, CharacterBase character, CancellationToken ct)
     {
         await UniTask.CompletedTask;
+    }
+
+    void OnStateChanged(IngredientState state)
+    {
+        Debug.Log($" OnStateChanged state :   {state}");
+        var material = Context.Data.GetMaterial(state);
+        Debug.Log($" OnStateChanged material :  {material}");
+        if (material != null)
+            _meshRenderer.material = material;
     }
 }

@@ -22,9 +22,11 @@ public class Plate : MonoBehaviour, ICarriable
         transform.localRotation = Quaternion.identity;
     }
 
-    public void OnPickedUp()
+    public void OnPickedUp(Transform slot)
     {
-        transform.SetParent(null);
+        transform.SetParent(slot);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
     }
 
     public bool CanReceive(ICarriable item) => item is IngredientObject;

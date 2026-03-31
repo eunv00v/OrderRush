@@ -10,6 +10,10 @@ public class GameLifetimeScope : LifetimeScope
     {
         // Services
         builder.Register<IOrderService, OrderService>(Lifetime.Singleton);
+
+        // Factories
+        builder.Register<GameObjectFactory>(Lifetime.Singleton);
+
         // Input Handler
         builder.RegisterEntryPoint<PlayerInputHandler>();
 

@@ -59,7 +59,7 @@ public class KitchenTable : MonoBehaviour, IInteractable
             }
 
             character.PickUp(_carriable);
-            _carriable.OnPickedUp();
+            _carriable.OnPickedUp(character.ItemSlot);
             _carriable = null;
             Debug.Log("[KitchenTable] Item picked up from table");
         }

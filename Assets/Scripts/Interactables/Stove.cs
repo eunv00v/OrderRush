@@ -10,6 +10,20 @@ public class Stove : CookingToolBase
     {
         Debug.Log($"[Stove] InteractAsync 호출됨 - IsHolding: {character.IsHolding}, IsOccupied: {IsOccupied}");
 
+        // 캐릭터가 아무것도 안 들고 있고 재료가 있으면 집기
+        if (!character.IsHolding && IsOccupied)
+        {
+            var ingredientObject = _ingredientSlot.GetComponentInChildren<IngredientObject>();
+            if (_currentIngredient != null)
+            {
+                RemoveIngredient();
+                ingredientObject.OnPickedUp(character.ItemSlot);
+                character.PickUp(ingredientObject);
+                Debug.Log($"[Stove] 재료 집음: {ingredientObject.Context}");
+            }
+            return;
+        }
+
         // 캐릭터가 재료 들고 있으면 올리기
         if (character.IsHolding && !IsOccupied)
         {
