@@ -24,29 +24,22 @@
 
 ```
 ProjectLifetimeScope          ← VContainerSettings Root로 등록, 앱 전체 생존
-└── GameLifetimeScope         ← Gameplay 씬, 게임플레이 생존
-    └── StageLifetimeScope    ← 맵마다 생성/소멸 (추후 확장)
+├── LobbyLifetimeScope        ← 로비 씬 (추후 구현)
+└── StageLifetimeScope        ← 게임 플레이 씬, 스테이지마다 생성/소멸
 ```
 
 ### 등록 내용
 **ProjectLifetimeScope**
 - MessagePipe
 - UpdateSubscriptionService (AsImplementedInterfaces)
-- AppBootstrap (EntryPoint) ← 첫 씬 로드 담당
+- IResourcesLoaderService, ResourcesLoaderService (Singleton)
+- Launcher (EntryPoint) ← 첫 씬 로드 담당
 
-**GameLifetimeScope**
-- CharacterStateMachine (EntryPoint, IStartable, ITickable)
-- IdleState, MoveState, WorkState (Scoped)
-- InjectGameObject(_playerObject) ← 추후 Addressables로 변경 예정
-
-
-### 확장 시 (Lobby 추가 등)
-```
-ProjectLifetimeScope
-├── LobbyLifetimeScope        ← 로비 씬 진입 시 생성, 나가면 소멸
-└── GameLifetimeScope
-    └── StageLifetimeScope
-```
+**StageLifetimeScope**
+- IOrderService, OrderService (Singleton)
+- GameObjectFactory (Singleton)
+- PlayerInputHandler (EntryPoint)
+- IInjectable 자동 주입 (BuildCallback)
 
 ---
 
@@ -71,7 +64,7 @@ Gameplay
 │   └── Player
 │       ├── Model     ← 3D 메시 (시각 전용)
 │       └── (NavMeshAgent, NavMeshMover, PlayerInputHandler 컴포넌트)
-├── GameLifetimeScope
+├── StageLifetimeScope
 └── EventSystem
 ```
 
@@ -166,10 +159,11 @@ Assets/
 ├── Resources/
 ├── Scenes/
 ├── Scripts/
-│   ├── Character/  ← NavMeshMover, PlayerInputHandler, StateMachine
-│   ├── Core/       ← ProjectLifetimeScope, GameLifetimeScope, AppBootstrap
-│   ├── Data/       ← RecipeData, Ingredient, CookingStep, IngredientState
-│   └── Interaction/← IInteractable, TestInteractable
+│   ├── Character/      ← NavMeshMover, PlayerInputHandler, StateMachine
+│   ├── Core/           ← IInjectable, GameObjectFactory
+│   ├── LifetimeScope/  ← ProjectLifetimeScope, StageLifetimeScope, LobbyLifetimeScope
+│   ├── Data/           ← RecipeData, Ingredient, CookingStep, IngredientState
+│   └── Interaction/    ← IInteractable, TestInteractable
 └── Plugins/        ← DOTween, UniRx
 ```
 

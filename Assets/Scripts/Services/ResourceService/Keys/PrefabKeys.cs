@@ -18,7 +18,7 @@ using System.Collections.Generic;
         { SteakMeat, "Assets/Prefabs/Ingredients/SteakMeat.prefab" },
         { KithenTalbe, "Assets/Prefabs/KithenTalbe.prefab" },
         { MeatFridge, "Assets/Prefabs/MeatFridge.prefab" },
-        { Plate, "Assets/Prefabs/Plate.prefab" },
+        { Plate, "Assets/Prefabs/Plate/Plate.prefab" },
         { Player, "Assets/Prefabs/Player.prefab" },
         { ProjectLifetimeScope, "Assets/Prefabs/ProjectLifetimeScope.prefab" },
         { TestCube, "Assets/Prefabs/TestCube.prefab" },

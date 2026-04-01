@@ -1,10 +1,11 @@
+using System.Linq;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-public class GameLifetimeScope : LifetimeScope
+public class StageLifetimeScope : LifetimeScope
 {
-    [SerializeField] GameObject _playerPrefab;
+    [SerializeField] Transform _injectObjectRoot;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -17,9 +18,14 @@ public class GameLifetimeScope : LifetimeScope
         // Input Handler
         builder.RegisterEntryPoint<PlayerInputHandler>();
 
+        // Inject IInjectable components in hierarchy
         builder.RegisterBuildCallback(container =>
         {
-            container.InjectGameObject(_playerPrefab); // Addressables 로드 예정
+            foreach (var obj in _injectObjectRoot.GetComponentsInChildren<MonoBehaviour>()
+                                          .OfType<IInjectable>())
+            {
+                container.Inject(obj as MonoBehaviour);
+            }
         });
     }
 }

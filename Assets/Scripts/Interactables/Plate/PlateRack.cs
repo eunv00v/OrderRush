@@ -3,23 +3,30 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public class PlateRack : MonoBehaviour, IInteractable
+public class PlateRack : MonoBehaviour, IInteractable, IInjectable
 {
     [SerializeField] Transform _interactPoint;
     [SerializeField] int _quantity = 5;
     [SerializeField] Transform _plateVisual;
     [SerializeField] float _heightPerPlate = 0.05f;
-    [SerializeField] Vector3 _basePosition;
 
-    [Inject] GameObjectFactory _factory;
+    private GameObjectFactory _factory;
 
 
     public string DisplayName => "Plate Rack";
     public Transform InteractPoint => _interactPoint;
+    private Vector3 _basePosition;
+
+    [Inject]
+    public void Construct(GameObjectFactory factory)
+    {
+        _factory = factory;
+    }
 
     void Start()
     {
-        UpdatePlateVisual();
+        _basePosition = _plateVisual.localPosition;
+        UpdatePlateHeight();
     }
 
     public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
@@ -40,6 +47,7 @@ public class PlateRack : MonoBehaviour, IInteractable
             return;
         }
 
+
         // 접시 생성
         var plate = await _factory.CreateAsync<Plate>(PrefabKeys.Plate);
         if (plate != null)
@@ -47,14 +55,14 @@ public class PlateRack : MonoBehaviour, IInteractable
             character.PickUp(plate);
             plate.OnPickedUp(character.ItemSlot);
             _quantity--;
-            UpdatePlateVisual();
+            UpdatePlateHeight();
             Debug.Log($"[PlateRack] Plate picked up. Remaining: {_quantity}");
         }
 
         await UniTask.CompletedTask;
     }
 
-    void UpdatePlateVisual()
+    void UpdatePlateHeight()
     {
         if (_plateVisual == null) return;
 
@@ -67,6 +75,6 @@ public class PlateRack : MonoBehaviour, IInteractable
 
         // 수량에 따라 높이 조정
         _plateVisual.gameObject.SetActive(true);
-        _plateVisual.localPosition = _basePosition + Vector3.up * (_quantity * _heightPerPlate);
+        _plateVisual.localPosition = _basePosition - Vector3.up * (_quantity * _heightPerPlate);
     }
 }

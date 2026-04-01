@@ -3,37 +3,27 @@ using VContainer;
 using MessagePipe;
 using System;
 
-public class PlayerCharacter : CharacterBase
+public class PlayerCharacter : CharacterBase, IInjectable
 {
     [SerializeField] NavMeshMover _mover;
     [SerializeField] ActionExecutor _actionExecutor;
 
-    ISubscriber<MoveEvent> _moveSubscriber;
-    ISubscriber<InteractEvent> _interactSubscriber;
-    IDisposable _moveDisposable;
-    IDisposable _interactDisposable;
+    IDisposable _subscription;
 
     [Inject]
     public void Construct(
         ISubscriber<MoveEvent> moveSubscriber,
         ISubscriber<InteractEvent> interactSubscriber)
     {
-        _moveSubscriber = moveSubscriber;
-        _interactSubscriber = interactSubscriber;
-    }
-
-    void OnEnable()
-    {
         var bag = DisposableBag.CreateBuilder();
-        _moveSubscriber.Subscribe(OnMoveEvent).AddTo(bag);
-        _interactSubscriber.Subscribe(OnInteractEvent).AddTo(bag);
-        bag.Build();
+        moveSubscriber.Subscribe(OnMoveEvent).AddTo(bag);
+        interactSubscriber.Subscribe(OnInteractEvent).AddTo(bag);
+        _subscription = bag.Build();
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
-        _moveDisposable?.Dispose();
-        _interactDisposable?.Dispose();
+        _subscription?.Dispose();
     }
 
     void OnMoveEvent(MoveEvent e)
