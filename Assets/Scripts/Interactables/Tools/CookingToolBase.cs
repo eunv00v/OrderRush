@@ -109,14 +109,18 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable, IInjectabl
         if (character.IsHolding && !HasIngredient)
         {
             Debug.Log($"[{DisplayName}] 재료 올리기 시도");
-            var ingredientObject = character.PutDown() as IngredientObject;
-
+            var ingredientObject = character.CurrentCarriable as IngredientObject;
             if (ingredientObject != null && CanPlaceIngredient(ingredientObject.Data))
             {
+                character.PutDown();
                 ingredientObject.transform.SetParent(_ingredientSlot);
                 ingredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
                 PlaceIngredient(ingredientObject.Data, ingredientObject);
                 StartCooking();
+            }
+            else
+            {
+                Debug.LogWarning($"[{DisplayName}] 이 도구에 올릴 수 없는 재료입니다.");
             }
         }
 
