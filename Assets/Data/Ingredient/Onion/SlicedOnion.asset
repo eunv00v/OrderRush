@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Ingredient
   IngredientName: SlicedOnion
   Icon: {fileID: 0}
-  Prefab: {fileID: 0}
+  PrefabName: SlicedOnion
   Transitions:
   - Type: 0
     Result: {fileID: 11400000, guid: 1e0c28e7381704579bea3ade829e1533, type: 2}

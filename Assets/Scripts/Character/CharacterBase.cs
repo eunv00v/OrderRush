@@ -23,6 +23,7 @@ public abstract class CharacterBase : MonoBehaviour
         }
 
         CurrentCarriable = item;
+        item.OnPickedUp(ItemSlot);  // 아이템 위치 자동 이동
 
         Debug.Log($"[{gameObject.name}] Picked up: {item}");
     }

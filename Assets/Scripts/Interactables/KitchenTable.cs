@@ -57,8 +57,7 @@ public class KitchenTable : MonoBehaviour, IInteractable
                 return;
             }
 
-            character.PickUp(_carriable);
-            _carriable.OnPickedUp(character.ItemSlot);
+            character.PickUp(_carriable);  // OnPickedUp 자동 호출됨
             _carriable = null;
         }
 

@@ -52,8 +52,7 @@ public class PlateRack : MonoBehaviour, IInteractable, IInjectable
         var plate = await _factory.CreateAsync<Plate>(PrefabKeys.GetPrefabPath(PrefabKeys.Plate));
         if (plate != null)
         {
-            character.PickUp(plate);
-            plate.OnPickedUp(character.ItemSlot);
+            character.PickUp(plate);  // OnPickedUp 자동 호출됨
             _quantity--;
             UpdatePlateHeight();
             Debug.Log($"[PlateRack] Plate picked up. Remaining: {_quantity}");

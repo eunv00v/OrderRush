@@ -7,7 +7,7 @@ public class IngredientData : ScriptableObject
 {
     public string IngredientName;
     public Sprite Icon;
-    public GameObject Prefab;
+    public string PrefabName;
 
     [Header("Transitions")]
     public List<IngredientTransition> Transitions = new();

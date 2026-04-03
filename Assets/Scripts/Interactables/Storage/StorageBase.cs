@@ -1,8 +1,9 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using VContainer;
 
-public class StorageBase : MonoBehaviour, IInteractable
+public class StorageBase : MonoBehaviour, IInteractable, IInjectable
 {
     [SerializeField] string _displayName = "Storage";
     [SerializeField] IngredientData _ingredient;
@@ -12,6 +13,13 @@ public class StorageBase : MonoBehaviour, IInteractable
     public string DisplayName => _displayName;
     public Transform InteractPoint => _interactPoint;
     public bool IsEmpty => _quantity == 0;
+    private GameObjectFactory _factory;
+
+    [Inject]
+    public void Construct(GameObjectFactory factory)
+    {
+        _factory = factory;
+    }
 
     public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
@@ -36,7 +44,7 @@ public class StorageBase : MonoBehaviour, IInteractable
         }
 
         // Prefab 유효성 검사
-        if (_ingredient == null || _ingredient.Prefab == null)
+        if (_ingredient == null)
         {
             Debug.LogError($"[{DisplayName}] IngredientData or Prefab is not assigned!");
             return;
@@ -46,9 +54,12 @@ public class StorageBase : MonoBehaviour, IInteractable
         await UniTask.Delay(500, cancellationToken: ct);
 
         // IngredientObject 생성
-        var ingredientObj = Instantiate(_ingredient.Prefab, character.ItemSlot);
-        var ingredientObject = ingredientObj.GetComponent<IngredientObject>();
+        var ingredientObject = await _factory.CreateAsync<IngredientObject>(PrefabKeys.GetPrefabPath(_ingredient.PrefabName));
         ingredientObject.SetData(_ingredient);
+        ingredientObject.transform.SetParent(character.ItemSlot);
+        ingredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        ingredientObject.transform.localScale = Vector3.one;
+
 
         // 캐릭터에게 전달
         character.PickUp(ingredientObject);

@@ -14,23 +14,25 @@ public class IngredientObject : MonoBehaviour, ICarriable
     public void OnPickedUp(Transform slot)
     {
         transform.SetParent(slot);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
     public void OnPutDown(Transform slot)
     {
         transform.SetParent(slot);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
     public void SetRuined()
     {
         IsRuined = true;
+
+        // 탄 음식 색상 (거의 검은색)
+        Color burnedColor = new Color(0.15f, 0.1f, 0.05f);
         var mpb = new MaterialPropertyBlock();
         _renderer.GetPropertyBlock(mpb);
-        mpb.SetColor("_Color", new Color(0.3f, 0.2f, 0.1f));
+        mpb.SetColor("_Color", burnedColor);      // Built-in RP
+        mpb.SetColor("_BaseColor", burnedColor);  // URP
         _renderer.SetPropertyBlock(mpb);
     }
 }

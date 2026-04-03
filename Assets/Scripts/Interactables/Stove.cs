@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -6,52 +7,19 @@ public class Stove : CookingToolBase
 {
     public override string DisplayName => "Stove";
 
-    public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+
+    private CancellationTokenSource _cookingCts;
+    private float _cookingElapsedTime;
+
+
+    protected override bool CanPlaceIngredient(IngredientData ingredient)
     {
-        Debug.Log($"[Stove] InteractAsync 호출됨 - IsHolding: {character.IsHolding}, IsOccupied: {IsOccupied}");
+        return ingredient != null && ingredient.Transitions.Exists(t => t.Type == TransitionType.Cook);
+    }
 
-        // 캐릭터가 아무것도 안 들고 있고 재료가 있으면 집기
-        if (!character.IsHolding && IsOccupied)
-        {
-            var ingredientObject = _ingredientSlot.GetComponentInChildren<IngredientObject>();
-            RemoveIngredient();
-            ingredientObject.OnPickedUp(character.ItemSlot);
-            character.PickUp(ingredientObject);
-            Debug.Log($"[Stove] 재료 집음: {ingredientObject.Data.IngredientName}");
-            return;
-        }
-
-        // 캐릭터가 재료 들고 있으면 올리기
-        if (character.IsHolding && !IsOccupied)
-        {
-            Debug.Log("[Stove] 재료 올리기 시도");
-            var ingredientObject = character.PutDown() as IngredientObject;
-            if (ingredientObject != null)
-            {
-                ingredientObject.transform.SetParent(_ingredientSlot);
-                ingredientObject.transform.localPosition = Vector3.zero;
-                PlaceIngredient(ingredientObject.Data, ingredientObject);
-            }
-        }
-
-        Debug.Log($"[Stove] IsCooking: {IsCooking}, IsOccupied: {IsOccupied}");
-
-        // 재료 없으면 무시
-        if (!IsOccupied)
-        {
-            Debug.Log($"[{DisplayName}] 재료가 없습니다.");
-            return;
-        }
-
-        // 이미 조리 중이면 무시
-        if (IsCooking)
-        {
-            Debug.Log($"[{DisplayName}] 이미 조리 중입니다.");
-            return;
-        }
-
-        // Cook 전환 가능 여부 체크
-        var transition = CurrentIngredient.Transitions.Find(t => t.Type == TransitionType.Cook);
+    protected override async void StartCooking()
+    {
+        var transition = CurrentIngredientData.Transitions.Find(t => t.Type == TransitionType.Cook);
         if (transition == null)
         {
             Debug.Log($"[{DisplayName}] 조리할 수 없는 재료입니다.");
@@ -59,7 +27,67 @@ public class Stove : CookingToolBase
         }
 
         Debug.Log($"[Stove] 조리 시작: {transition.Duration}초");
-        StartCookingTimer(transition);
-        await UniTask.CompletedTask;
+
+        _cookingCts = new CancellationTokenSource();
+
+        try
+        {
+            IsCooking = true;
+            _progressView.SetCookingStyle();
+
+            while (_cookingElapsedTime < transition.Duration)
+            {
+                _cookingElapsedTime += Time.deltaTime;
+                UpdateProgress(_cookingElapsedTime, transition.Duration);
+                await UniTask.Yield(PlayerLoopTiming.Update, _cookingCts.Token);
+            }
+
+            // 조리 완료
+            Debug.Log($"[Stove] 조리 완료: {transition.Result.IngredientName}");
+            _progressView.SetProgress(1f);
+            await CompleteTransition(transition);
+
+            _cookingElapsedTime = 0f;
+            _progressView.SetOverdoneStyle();
+
+            // 오버쿡 타이머
+            while (_cookingElapsedTime < transition.OverDuration)
+            {
+                _cookingElapsedTime += Time.deltaTime;
+                UpdateProgress(_cookingElapsedTime, transition.OverDuration);
+
+                await UniTask.Yield(PlayerLoopTiming.Update, _cookingCts.Token);
+            }
+
+            _currentIngredientObject.SetRuined();
+            _progressView.SetVisible(false);
+
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"[{DisplayName}] 요리가 중단되었습니다.");
+        }
+        finally
+        {
+            IsCooking = false;
+            StopCooking();
+        }
+
     }
+
+
+
+
+
+    protected override void StopCooking()
+    {
+        base.StopCooking();
+        _cookingCts?.Cancel();
+        _cookingCts?.Dispose();
+        _cookingCts = null;
+        _cookingElapsedTime = 0;
+        _progressView.SetVisible(false);
+    }
+
+
 }

@@ -18,16 +18,14 @@ public class Plate : MonoBehaviour, ICarriable, IStackable
     public void OnPickedUp(Transform slot)
     {
         transform.SetParent(slot);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         transform.localScale = Vector3.one;
     }
 
     public void OnPutDown(Transform slot)
     {
         transform.SetParent(slot);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         transform.localScale = Vector3.one;
     }
 

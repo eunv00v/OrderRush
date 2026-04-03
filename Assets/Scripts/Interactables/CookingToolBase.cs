@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public abstract class CookingToolBase : MonoBehaviour, IInteractable
+public abstract class CookingToolBase : MonoBehaviour, IInteractable, IInjectable
 {
     [Header("Interaction")]
     [SerializeField] protected Transform _interactPoint;
@@ -14,15 +14,13 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
 
     protected IngredientObject _currentIngredientObject;
 
-    private IngredientTransition _currentTransition;
-    private CancellationTokenSource _cookingCts;
-    private float _cookingElapsedTime;
-
     public abstract string DisplayName { get; }
     public Transform InteractPoint => _interactPoint;
-    public IngredientData CurrentIngredient => _currentIngredientObject != null ? _currentIngredientObject.Data : null;
-    public bool IsOccupied => _currentIngredientObject != null;
-    public bool IsCooking => _cookingCts != null;
+    public IngredientData CurrentIngredientData => _currentIngredientObject != null ? _currentIngredientObject.Data : null;
+    public bool HasIngredient => _currentIngredientObject != null;
+
+    public bool IsCooking { get; protected set; }
+    private GameObjectFactory _factory;
 
     protected virtual void Awake()
     {
@@ -30,19 +28,20 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
     }
 
 
-
-    protected virtual void Start()
+    [Inject]
+    public void Construct(GameObjectFactory factory)
     {
+        _factory = factory;
     }
 
     protected virtual void OnDestroy()
     {
-        StopCookingTimer();
+        StopCooking();
     }
 
     public virtual void PlaceIngredient(IngredientData ingredient, IngredientObject ingredientObject)
     {
-        if (IsOccupied)
+        if (HasIngredient)
         {
             Debug.LogWarning($"[{DisplayName}] 이미 재료가 있습니다.");
             return;
@@ -53,94 +52,88 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
         Debug.Log($"[{DisplayName}] 재료 배치: {ingredient.IngredientName}");
     }
 
-    public virtual IngredientData RemoveIngredient()
+    public virtual void RemoveIngredient()
     {
-        if (!IsOccupied)
+        if (!HasIngredient)
         {
             Debug.LogWarning($"[{DisplayName}] 재료가 없습니다.");
-            return null;
+            return;
         }
 
         var ingredientData = _currentIngredientObject.Data;
         _currentIngredientObject = null;
-        StopCookingTimer();
+        StopCooking();
         Debug.Log($"[{DisplayName}] 재료 제거: {ingredientData.IngredientName}");
-        return ingredientData;
+
     }
 
-    protected void StartCookingTimer(IngredientTransition transition)
+
+    protected virtual bool CanPlaceIngredient(IngredientData ingredient)
     {
-        if (_cookingCts != null)
+        return true;
+    }
+
+
+    protected virtual async void StartCooking()
+    {
+
+    }
+
+    protected virtual void StopCooking()
+    {
+        _progressView.SetVisible(false);
+        IsCooking = false;
+    }
+
+    protected void UpdateProgress(float elapsedTime, float duration)
+    {
+        float progress = elapsedTime / duration;
+        _progressView.SetProgress(progress);
+    }
+
+
+    public virtual async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+    {
+        Debug.Log($"[CookingToolBase] InteractAsync 호출됨 - IsHolding: {character.IsHolding}, IsOccupied: {HasIngredient}");
+
+        // 캐릭터가 아무것도 안 들고 있고 재료가 있으면 집기
+        if (!character.IsHolding && HasIngredient)
         {
-            StopCookingTimer();
+            character.PickUp(_currentIngredientObject);  // OnPickedUp 자동 호출됨
+            Debug.Log($"[CookingToolBase] 재료 집음: {_currentIngredientObject.Data.IngredientName}");
+            RemoveIngredient();
+            return;
         }
 
-        _currentTransition = transition;
-        _cookingCts = new CancellationTokenSource();
-        _cookingElapsedTime = 0f;
-
-        _progressView.SetVisible(true);
-        _progressView.SetCookingStyle();
-        CookAsync().Forget();
-    }
-
-    protected void StopCookingTimer()
-    {
-        Debug.Log($"[StopCookingTimer]초");
-        if (_cookingCts != null)
+        // 캐릭터가 재료 들고 있으면 올리기
+        if (character.IsHolding && !HasIngredient)
         {
-            _cookingCts.Cancel();
-            _cookingCts.Dispose();
-            _cookingCts = null;
-            _currentTransition = null;
-            _cookingElapsedTime = 0f;
-            _progressView.SetVisible(false);
-            _progressView.SetProgress(0f);
-        }
-    }
+            Debug.Log($"[{DisplayName}] 재료 올리기 시도");
+            var ingredientObject = character.PutDown() as IngredientObject;
 
-    public float GetProgress()
-    {
-        if (_currentTransition == null || _currentTransition.Duration <= 0)
-            return 0f;
-
-        return Mathf.Clamp01(_cookingElapsedTime / _currentTransition.Duration);
-    }
-
-    protected async UniTask CookAsync()
-    {
-        var ct = _cookingCts.Token;
-
-        try
-        {
-            while (_cookingElapsedTime < _currentTransition.Duration)
+            if (ingredientObject != null && CanPlaceIngredient(ingredientObject.Data))
             {
-                await UniTask.Yield(PlayerLoopTiming.Update, ct);
-                _cookingElapsedTime += Time.deltaTime;
-                _progressView.SetProgress(GetProgress());
-            }
-
-            if (IsOccupied)
-            {
-                var resultData = _currentTransition.Result;
-                _currentIngredientObject.SetData(resultData);
-                Debug.Log($"[{DisplayName}] 조리 완료: {resultData.IngredientName}");
+                ingredientObject.transform.SetParent(_ingredientSlot);
+                ingredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                PlaceIngredient(ingredientObject.Data, ingredientObject);
+                StartCooking();
             }
         }
-        catch (OperationCanceledException)
-        {
-            Debug.Log($"[CookAsync]: 취소됨");
-        }
-        finally
-        {
-            _cookingCts?.Dispose();
-            _cookingCts = null;
-            _currentTransition = null;
-            _cookingElapsedTime = 0f;
-            _progressView.SetVisible(false);
-            _progressView.SetProgress(0f);
-        }
+
+        Debug.Log($"[Stove] IsCooking: {IsCooking}, IsOccupied: {HasIngredient}");
+
+
+        await UniTask.CompletedTask;
     }
 
-    public abstract UniTask InteractAsync(CharacterBase character, CancellationToken ct);
+    protected async UniTask CompleteTransition(IngredientTransition transition)
+    {
+        Destroy(_currentIngredientObject.gameObject);
+        _currentIngredientObject = await _factory.CreateAsync<IngredientObject>(PrefabKeys.GetPrefabPath(transition.Result.PrefabName));
+        _currentIngredientObject.SetData(transition.Result);
+        _currentIngredientObject.transform.SetParent(_ingredientSlot);
+        _currentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        _currentIngredientObject.transform.localScale = Vector3.one;
+
+    }
 }

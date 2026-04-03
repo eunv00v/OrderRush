@@ -19,15 +19,15 @@ public class CookingProgressView : MonoBehaviour
     public void SetCookingStyle()
     {
         SetVisible(true);
-        SetProgress(1);
+        SetProgress(0);
         _fill.color = Color.green;
     }
 
     public void SetOverdoneStyle()
     {
         SetVisible(true);
-        SetProgress(1);
-        _fill.color = Color.softYellow;
+        SetProgress(0);
+        _fill.color = Color.orangeRed;
     }
 
     public void SetVisible(bool visible)

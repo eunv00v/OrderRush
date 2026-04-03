@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IngredientData
   IngredientName: GrilledMushroom
   Icon: {fileID: 0}
-  Prefab: {fileID: 0}
+  PrefabName: GrilledMushroom
   Transitions: []

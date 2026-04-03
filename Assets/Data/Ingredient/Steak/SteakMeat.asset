@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Ingredient
   IngredientName: SteakMeat
   Icon: {fileID: 0}
-  Prefab: {fileID: 6718803449404254426, guid: 106d4b7f4e3e64c34840701f9a2f1776, type: 3}
+  PrefabName: SteakMeat
   Transitions:
   - Type: 0
     Result: {fileID: 11400000, guid: 012b81213826c4069b678dfdef7a021b, type: 2}
