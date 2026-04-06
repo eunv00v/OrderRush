@@ -6,13 +6,12 @@ using VContainer.Unity;
 public class StageLifetimeScope : LifetimeScope
 {
     [SerializeField] Transform _root;
-    [SerializeField] Transform _injectObjectRoot;
 
     protected override void Configure(IContainerBuilder builder)
     {
         // Services
         builder.Register<IOrderService, OrderService>(Lifetime.Singleton);
-        builder.Register<ILevelsDataService, LevelsDataService>(Lifetime.Singleton);
+        builder.Register<ILevelProgressService, LevelProgressService>(Lifetime.Singleton);
 
         // Factories
         builder.Register<SpawnFactory>(Lifetime.Singleton);
@@ -20,9 +19,6 @@ public class StageLifetimeScope : LifetimeScope
         // Initiators
         builder.RegisterEntryPoint<GameInitiator>();
         builder.RegisterEntryPoint<PlayerInputHandler>();
-
-        // Grid
-        builder.RegisterComponentInHierarchy<GridSystem>();
 
         // Level 
         builder.Register<LevelFactory>(Lifetime.Scoped).WithParameter(_root);

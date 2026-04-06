@@ -8,7 +8,7 @@ using UnityEditor;
 public class ResourceKeysGenerator
 {
     [MenuItem("Tools/ResourceKeysGenerator/CreatePrefabKeys", priority = 0)]
-    public static void CreatePrefabTags()
+    public static void CreatePrefabKeys()
     {
         EditorUtility.DisplayProgressBar("CreatePrefabKeys", "Working...", 1f);
         Thread.Sleep(1000);
@@ -17,6 +17,26 @@ public class ResourceKeysGenerator
         {
             var path = "Assets/Scripts/Services/ResourceService/PrefabKeys.cs";
             var contents = CreatePrefabKeyContents();
+            File.WriteAllText(path, contents);
+        }
+        catch (Exception e)
+        {
+            UnityEngine.Debug.LogError(e);
+        }
+
+        EditorUtility.ClearProgressBar();
+    }
+
+    [MenuItem("Tools/ResourceKeysGenerator/CreateDataKeys", priority = 1)]
+    public static void CreateDataKeys()
+    {
+        EditorUtility.DisplayProgressBar("CreateDataKeys", "Working...", 1f);
+        Thread.Sleep(1000);
+
+        try
+        {
+            var path = "Assets/Scripts/Services/ResourceService/DataKeys.cs";
+            var contents = CreateDataKeyContents();
             File.WriteAllText(path, contents);
         }
         catch (Exception e)
@@ -70,5 +90,60 @@ public class ResourceKeysGenerator
         sb.AppendLine("    }");
         sb.AppendLine("}");
         return sb.ToString();
+    }
+
+    private static string CreateDataKeyContents()
+    {
+        var assetGuids = AssetDatabase.FindAssets("t:ScriptableObject", new string[] { "Assets/Data" });
+        string[] assetPathList = Array.ConvertAll<string, string>(assetGuids, AssetDatabase.GUIDToAssetPath);
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("using System;");
+        sb.AppendLine("using System.Collections.Generic;");
+        sb.AppendLine("");
+        sb.AppendLine("public static class DataKeys");
+        sb.AppendLine("{");
+
+        // const string 생성 (접두사 포함)
+        foreach (var assetPath in assetPathList)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(assetPath);
+            var keyName = GetDataKeyName(assetPath, fileName);
+            sb.AppendLine($"    public const string {keyName} = \"{keyName}\";");
+        }
+
+        sb.AppendLine("");
+        sb.AppendLine("    public static Dictionary<string, string> DataPaths = new Dictionary<string, string>()");
+        sb.AppendLine("    {");
+
+        // Dictionary 생성 (접두사 포함된 키, 원본 경로)
+        foreach (var assetPath in assetPathList)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(assetPath);
+            var keyName = GetDataKeyName(assetPath, fileName);
+            sb.AppendLine("        { " + keyName + ", \"" + assetPath + "\" },");
+        }
+
+        sb.AppendLine("    };");
+        sb.AppendLine("");
+        sb.AppendLine("    public static string GetDataPath(string tag)");
+        sb.AppendLine("    {");
+        sb.AppendLine("        if (DataPaths.TryGetValue(tag, out var path))");
+        sb.AppendLine("        {");
+        sb.AppendLine("            return path;");
+        sb.AppendLine("        }");
+        sb.AppendLine("        return string.Empty;");
+        sb.AppendLine("    }");
+        sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    private static string GetDataKeyName(string assetPath, string fileName)
+    {
+        if (assetPath.Contains("/Ingredient/"))
+            return "Ingredient_" + fileName;
+        else if (assetPath.Contains("/Recipe/"))
+            return "Recipe_" + fileName;
+        else
+            return fileName; // Stage 등 나머지는 접두사 없이
     }
 }

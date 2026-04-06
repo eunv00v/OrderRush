@@ -6,10 +6,12 @@ using VContainer.Unity;
 public class GameInitiator : IStartable
 {
     private readonly LevelContextPresenter _levelPresenter;
+    private readonly ILevelProgressService _levelsDataService;
 
     [Inject]
-    public GameInitiator(LevelContextPresenter levelPresenter)
+    public GameInitiator(ILevelProgressService levelsDataService, LevelContextPresenter levelPresenter)
     {
+        _levelsDataService = levelsDataService;
         _levelPresenter = levelPresenter;
     }
 
@@ -17,8 +19,13 @@ public class GameInitiator : IStartable
     {
         Debug.Log("GameInitiator: Initializing game...");
 
-        // 레벨 1 로드
-        await _levelPresenter.LoadLevelContext(1);
+        // 레벨 데이터 초기화
+        await _levelsDataService.LoadLevelsData();
+        _levelsDataService.LoadMaxReachedLevel();
+
+        // 선택된 레벨 로드 (기본값 1)
+        int selectedLevel = _levelsDataService.GetSelectedLevel();
+        await _levelPresenter.LoadLevelContext(selectedLevel);
 
         Debug.Log("GameInitiator: Game initialized!");
     }

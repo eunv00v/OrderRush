@@ -9,6 +9,8 @@ public class LevelFactory
     private readonly IResourcesLoaderService _resourceLoader;
     private readonly IObjectResolver _container;
 
+    private const string DefaultPath = "Assets/Prefabs/Game/Level/Level{0}.prefab";
+
 
     public LevelFactory(IResourcesLoaderService resourceLoader,
                         IObjectResolver container,
@@ -19,17 +21,18 @@ public class LevelFactory
         _root = root;
     }
 
-    public async UniTask<LevelContext> CreateLevelContext(string levelPath)
+    public async UniTask<LevelContext> CreateLevelContext(int level)
     {
-
+        string levelPath = string.Format(DefaultPath, level);
         var levelPrefab = await _resourceLoader.LoadAsync<LevelContext>(levelPath);
-        var level = Object.Instantiate(levelPrefab, _root);
-        _container.InjectGameObject(level.gameObject);
-        return level;
+        var levelContext = Object.Instantiate(levelPrefab, _root);
+        _container.InjectGameObject(levelContext.gameObject);
+        return levelContext;
     }
 
-    public void ReleaseLevelContext(string levelPath)
+    public void ReleaseLevelContext(int level)
     {
+        string levelPath = string.Format(DefaultPath, level);
         _resourceLoader.Release(levelPath);
     }
 }

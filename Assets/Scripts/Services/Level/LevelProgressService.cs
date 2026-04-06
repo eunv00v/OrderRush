@@ -1,34 +1,23 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class LevelsDataService : ILevelsDataService
+public class LevelProgressService : ILevelProgressService
 {
     private readonly IResourcesLoaderService _resourceLoader;
     private LevelsData _levelsData;
     private int _maxReachedLevel = 1;
-
-    private const string LEVELS_DATA_KEY = "Assets/Data/Level/LevelsData.asset";
+    private int _selectedLevel = 1;
     private const string PREF_MAX_LEVEL = "MaxReachedLevel";
 
-    public LevelsDataService(IResourcesLoaderService resourceLoader)
+    public LevelProgressService(IResourcesLoaderService resourceLoader)
     {
         _resourceLoader = resourceLoader;
-        LoadLevelsData().Forget();
-        LoadMaxReachedLevel();
     }
 
-    private async UniTaskVoid LoadLevelsData()
+    public async UniTask LoadLevelsData()
     {
-        _levelsData = await _resourceLoader.LoadAsync<LevelsData>(LEVELS_DATA_KEY);
-
-        if (_levelsData == null)
-        {
-            Debug.LogError("LevelsData not found! Please create LevelsData asset.");
-        }
-        else
-        {
-            Debug.Log($"LevelsData loaded: {_levelsData.GetTotalLevelCount()} levels");
-        }
+        string path = PrefabKeys.GetPrefabPath(DataKeys.GetDataPath(DataKeys.LevelSettings));
+        _levelsData = await _resourceLoader.LoadAsync<LevelsData>(path);
     }
 
     public LevelData GetLevelData(int levelNumber)
@@ -63,5 +52,20 @@ public class LevelsDataService : ILevelsDataService
     private void LoadMaxReachedLevel()
     {
         _maxReachedLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 1);
+    }
+
+    void ILevelProgressService.LoadMaxReachedLevel()
+    {
+        LoadMaxReachedLevel();
+    }
+
+    public void SetSelectedLevel(int levelNumber)
+    {
+        _selectedLevel = levelNumber;
+    }
+
+    public int GetSelectedLevel()
+    {
+        return _selectedLevel;
     }
 }

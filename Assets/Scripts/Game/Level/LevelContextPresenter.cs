@@ -6,7 +6,7 @@ using VContainer.Unity;
 public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposable
 {
     private readonly IResourcesLoaderService _resourcesLoaderService;
-    private readonly ILevelsDataService _levelsDataService;
+    private readonly ILevelProgressService _levelsDataService;
     private readonly IOrderService _orderService;
     private readonly LevelFactory _levelFactory;
 
@@ -16,8 +16,9 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
     private float _elapsedTime;
     private bool _isLevelActive;
 
+
     public LevelContextPresenter(IResourcesLoaderService resourcesLoaderService,
-        ILevelsDataService levelsDataService,
+        ILevelProgressService levelsDataService,
         IOrderService orderService,
         LevelFactory levelFactory)
     {
@@ -39,8 +40,14 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
             return;
         }
 
-        // 2. 레벨 맵 로드 (Addressables로 로드, LevelContext로 타입 체크)
-        // TODO: Addressables 로드 구현
+        // 2. 레벨 맵 로드 //LoadLevelsData
+        var levelContext = await _levelFactory.CreateLevelContext(levelNumber);
+        if (levelContext == null)
+        {
+            Debug.LogError($"Failed to load level map: Level{levelNumber}");
+            return;
+        }
+        _currentLevelMap = levelContext.gameObject;
 
         // 3. 초기화
         _currentMoney = 0;
@@ -93,10 +100,9 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
 
     public void Dispose()
     {
-        // TODO: Addressables 리소스 해제
-        if (_currentLevelMap != null)
+        if (_currentLevelMap != null && _currentLevelData != null)
         {
-            // _levelFactory.ReleaseLevelMap(_currentLevelMap);
+            _levelFactory.ReleaseLevelContext(_currentLevelData.LevelNumber);
         }
     }
 }

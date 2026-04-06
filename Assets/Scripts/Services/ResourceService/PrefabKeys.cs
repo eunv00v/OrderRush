@@ -14,8 +14,8 @@ using System.Collections.Generic;
     public const string KithenTable = "KithenTable";
     public const string Stove = "Stove";
     public const string TrashCan = "TrashCan";
+    public const string Level1 = "Level1";
     public const string ProjectLifetimeScope = "ProjectLifetimeScope";
-    public const string Stage1 = "Stage1";
     public const string TestCube = "TestCube";
 
     public static Dictionary<string, string> PrefabPaths = new Dictionary<string, string>()
@@ -32,8 +32,8 @@ using System.Collections.Generic;
         { KithenTable, "Assets/Prefabs/Game/Kitchen/Tools/KithenTable.prefab" },
         { Stove, "Assets/Prefabs/Game/Kitchen/Tools/Stove.prefab" },
         { TrashCan, "Assets/Prefabs/Game/Kitchen/Tools/TrashCan.prefab" },
+        { Level1, "Assets/Prefabs/Game/Level/Level1.prefab" },
         { ProjectLifetimeScope, "Assets/Prefabs/Game/ProjectLifetimeScope.prefab" },
-        { Stage1, "Assets/Prefabs/Game/Stage/Stage1.prefab" },
         { TestCube, "Assets/Prefabs/Game/TestCube.prefab" },
     };
 
