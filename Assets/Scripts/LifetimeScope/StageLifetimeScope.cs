@@ -5,6 +5,7 @@ using VContainer.Unity;
 
 public class StageLifetimeScope : LifetimeScope
 {
+    [SerializeField] Transform _root;
     [SerializeField] Transform _injectObjectRoot;
 
     protected override void Configure(IContainerBuilder builder)
@@ -14,7 +15,7 @@ public class StageLifetimeScope : LifetimeScope
         builder.Register<ILevelsDataService, LevelsDataService>(Lifetime.Singleton);
 
         // Factories
-        builder.Register<GameObjectFactory>(Lifetime.Singleton);
+        builder.Register<SpawnFactory>(Lifetime.Singleton);
 
         // Initiators
         builder.RegisterEntryPoint<GameInitiator>();
@@ -23,14 +24,10 @@ public class StageLifetimeScope : LifetimeScope
         // Grid
         builder.RegisterComponentInHierarchy<GridSystem>();
 
-        // Inject IInjectable components in hierarchy
-        builder.RegisterBuildCallback(container =>
-        {
-            foreach (var obj in _injectObjectRoot.GetComponentsInChildren<MonoBehaviour>()
-                                          .OfType<IInjectable>())
-            {
-                container.Inject(obj as MonoBehaviour);
-            }
-        });
+        // Level 
+        builder.Register<LevelFactory>(Lifetime.Scoped).WithParameter(_root);
+        builder.Register<LevelContextPresenter>(Lifetime.Scoped)
+                .As<ILevelContextPresenter>()
+                .WithParameter(_root);
     }
 }

@@ -37,9 +37,8 @@ ProjectLifetimeScope          ← VContainerSettings Root로 등록, 앱 전체 
 
 **StageLifetimeScope**
 - IOrderService, OrderService (Singleton)
-- GameObjectFactory (Singleton)
+- SpawnFactory (Singleton)
 - PlayerInputHandler (EntryPoint)
-- IInjectable 자동 주입 (BuildCallback)
 
 ---
 

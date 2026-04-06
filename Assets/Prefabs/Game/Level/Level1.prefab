@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 3538649544002916566}
   - component: {fileID: 8223113801063356310}
   m_Layer: 0
-  m_Name: Stage1
+  m_Name: Level1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -255,7 +255,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3100355411295349639}
   - {fileID: 6335289694993369235}
   - {fileID: 992191810904949893}
   - {fileID: 4967468813771865904}
@@ -428,55 +427,6 @@ Transform:
   - {fileID: 8336219326321704654}
   m_Father: {fileID: 3538649544002916566}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3159777764740565149
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3100355411295349639}
-  - component: {fileID: 1318847202433908927}
-  m_Layer: 0
-  m_Name: StageLifetimeScope
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3100355411295349639
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3159777764740565149}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.6761503, y: 0, z: -0.7842925}
-  m_LocalScale: {x: 0.25, y: 1, z: 0.25}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3538649544002916566}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1318847202433908927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3159777764740565149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5605cdfffabfe4c9ca20446b55ecdba5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StageLifetimeScope
-  parentReference:
-    TypeName: ProjectLifetimeScope
-  autoRun: 1
-  autoInjectGameObjects: []
-  _injectObjectRoot: {fileID: 6704593362862459378}
 --- !u!1 &5307717348262119676
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,7 +1099,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4967468813771865904}
-  - component: {fileID: 6156374807397446891}
   - component: {fileID: 4627103844577241895}
   m_Layer: 0
   m_Name: GridManager
@@ -1173,21 +1122,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3538649544002916566}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6156374807397446891
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9143110816314050349}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fda0839ee32e4bf19bc9a3e7b5eb606, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GridSystem
-  width: 20
-  height: 20
-  cellSize: 1
 --- !u!114 &4627103844577241895
 MonoBehaviour:
   m_ObjectHideFlags: 0

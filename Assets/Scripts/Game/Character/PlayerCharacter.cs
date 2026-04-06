@@ -3,7 +3,7 @@ using VContainer;
 using MessagePipe;
 using System;
 
-public class PlayerCharacter : CharacterBase, IInjectable
+public class PlayerCharacter : CharacterBase
 {
 
     IDisposable _subscription;

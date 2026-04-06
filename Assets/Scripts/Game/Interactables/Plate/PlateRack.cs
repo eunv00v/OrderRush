@@ -3,14 +3,14 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public class PlateRack : MonoBehaviour, IInteractable, IInjectable
+public class PlateRack : MonoBehaviour, IInteractable
 {
     [SerializeField] Transform _interactPoint;
     [SerializeField] int _quantity = 5;
     [SerializeField] Transform _plateVisual;
     [SerializeField] float _heightPerPlate = 0.2f;
 
-    private GameObjectFactory _factory;
+    private SpawnFactory _factory;
 
 
     public string DisplayName => "Plate Rack";
@@ -18,7 +18,7 @@ public class PlateRack : MonoBehaviour, IInteractable, IInjectable
     private Vector3 _basePosition;
 
     [Inject]
-    public void Construct(GameObjectFactory factory)
+    public void Construct(SpawnFactory factory)
     {
         _factory = factory;
     }
@@ -49,7 +49,7 @@ public class PlateRack : MonoBehaviour, IInteractable, IInjectable
 
 
         // 접시 생성
-        var plate = await _factory.CreateAsync<Plate>(PrefabKeys.GetPrefabPath(PrefabKeys.Plate));
+        var plate = await _factory.Create<Plate>(PrefabKeys.GetPrefabPath(PrefabKeys.Plate));
         if (plate != null)
         {
             character.PickUp(plate);  // OnPickedUp 자동 호출됨

@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public class StorageBase : MonoBehaviour, IInteractable, IInjectable
+public class StorageBase : MonoBehaviour, IInteractable
 {
     [SerializeField] string _displayName = "Storage";
     [SerializeField] IngredientData _ingredient;
@@ -13,10 +13,10 @@ public class StorageBase : MonoBehaviour, IInteractable, IInjectable
     public string DisplayName => _displayName;
     public Transform InteractPoint => _interactPoint;
     public bool IsEmpty => _quantity == 0;
-    private GameObjectFactory _factory;
+    private SpawnFactory _factory;
 
     [Inject]
-    public void Construct(GameObjectFactory factory)
+    public void Construct(SpawnFactory factory)
     {
         _factory = factory;
     }
@@ -54,7 +54,7 @@ public class StorageBase : MonoBehaviour, IInteractable, IInjectable
         await UniTask.Delay(500, cancellationToken: ct);
 
         // IngredientObject 생성
-        var ingredientObject = await _factory.CreateAsync<IngredientObject>(PrefabKeys.GetPrefabPath(_ingredient.PrefabName));
+        var ingredientObject = await _factory.Create<IngredientObject>(PrefabKeys.GetPrefabPath(_ingredient.PrefabName));
         ingredientObject.SetData(_ingredient);
         ingredientObject.transform.SetParent(character.ItemSlot);
         ingredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);

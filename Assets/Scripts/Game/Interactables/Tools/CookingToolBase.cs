@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public abstract class CookingToolBase : MonoBehaviour, IInteractable, IInjectable
+public abstract class CookingToolBase : MonoBehaviour, IInteractable
 {
     [Header("Interaction")]
     [SerializeField] protected Transform _interactPoint;
@@ -20,7 +20,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable, IInjectabl
     public bool HasIngredient => _currentIngredientObject != null;
 
     public bool IsCooking { get; protected set; }
-    private GameObjectFactory _factory;
+    private SpawnFactory _factory;
 
     protected virtual void Awake()
     {
@@ -29,7 +29,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable, IInjectabl
 
 
     [Inject]
-    public void Construct(GameObjectFactory factory)
+    public void Construct(SpawnFactory factory)
     {
         _factory = factory;
     }
@@ -133,7 +133,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable, IInjectabl
     protected async UniTask CompleteTransition(IngredientTransition transition)
     {
         Destroy(_currentIngredientObject.gameObject);
-        _currentIngredientObject = await _factory.CreateAsync<IngredientObject>(PrefabKeys.GetPrefabPath(transition.Result.PrefabName));
+        _currentIngredientObject = await _factory.Create<IngredientObject>(PrefabKeys.GetPrefabPath(transition.Result.PrefabName));
         _currentIngredientObject.SetData(transition.Result);
         _currentIngredientObject.transform.SetParent(_ingredientSlot);
         _currentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);

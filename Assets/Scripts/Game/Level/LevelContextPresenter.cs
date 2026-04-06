@@ -18,12 +18,13 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
 
     public LevelContextPresenter(IResourcesLoaderService resourcesLoaderService,
         ILevelsDataService levelsDataService,
-        IOrderService orderService)
+        IOrderService orderService,
+        LevelFactory levelFactory)
     {
         _resourcesLoaderService = resourcesLoaderService;
         _levelsDataService = levelsDataService;
         _orderService = orderService;
-        _levelFactory = new LevelFactory(resourcesLoaderService);
+        _levelFactory = levelFactory;
     }
 
     public async UniTask LoadLevelContext(int levelNumber)
