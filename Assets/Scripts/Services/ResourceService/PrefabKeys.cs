@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
    public static class PrefabKeys
    {
+    public const string CustomerCharacter1 = "CustomerCharacter1";
+    public const string Player = "Player";
     public const string DefaultCube = "DefaultCube";
     public const string DiningChair = "DiningChair";
     public const string DiningTable2 = "DiningTable2";
@@ -9,7 +11,6 @@ using System.Collections.Generic;
     public const string SteakMeat = "SteakMeat";
     public const string Plate = "Plate";
     public const string PlateRack = "PlateRack";
-    public const string Player = "Player";
     public const string MeatFridge = "MeatFridge";
     public const string KithenTable = "KithenTable";
     public const string Stove = "Stove";
@@ -20,6 +21,8 @@ using System.Collections.Generic;
 
     public static Dictionary<string, string> PrefabPaths = new Dictionary<string, string>()
     {
+        { CustomerCharacter1, "Assets/Prefabs/Game/Character/CustomerCharacter1.prefab" },
+        { Player, "Assets/Prefabs/Game/Character/Player.prefab" },
         { DefaultCube, "Assets/Prefabs/Game/DefaultCube.prefab" },
         { DiningChair, "Assets/Prefabs/Game/Dining/DiningChair.prefab" },
         { DiningTable2, "Assets/Prefabs/Game/Dining/DiningTable2.prefab" },
@@ -27,7 +30,6 @@ using System.Collections.Generic;
         { SteakMeat, "Assets/Prefabs/Game/Ingredients/SteakMeat.prefab" },
         { Plate, "Assets/Prefabs/Game/Kitchen/Plate/Plate.prefab" },
         { PlateRack, "Assets/Prefabs/Game/Kitchen/Plate/PlateRack.prefab" },
-        { Player, "Assets/Prefabs/Game/Kitchen/Player.prefab" },
         { MeatFridge, "Assets/Prefabs/Game/Kitchen/Storage/MeatFridge.prefab" },
         { KithenTable, "Assets/Prefabs/Game/Kitchen/Tools/KithenTable.prefab" },
         { Stove, "Assets/Prefabs/Game/Kitchen/Tools/Stove.prefab" },

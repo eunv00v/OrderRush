@@ -76,7 +76,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
 
     protected virtual async void StartCooking()
     {
-
+        await UniTask.CompletedTask;
     }
 
     protected virtual void StopCooking()

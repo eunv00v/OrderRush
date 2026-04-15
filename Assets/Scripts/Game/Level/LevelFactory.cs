@@ -24,10 +24,10 @@ public class LevelFactory
     public async UniTask<LevelContext> CreateLevelContext(int level)
     {
         string levelPath = string.Format(DefaultPath, level);
-        var levelPrefab = await _resourceLoader.LoadAsync<LevelContext>(levelPath);
-        var levelContext = Object.Instantiate(levelPrefab, _root);
-        _container.InjectGameObject(levelContext.gameObject);
-        return levelContext;
+        var levelPrefab = await _resourceLoader.LoadAsync<GameObject>(levelPath);
+        var levelInstance = Object.Instantiate(levelPrefab, _root);
+        _container.InjectGameObject(levelInstance);
+        return levelInstance.GetComponent<LevelContext>();
     }
 
     public void ReleaseLevelContext(int level)

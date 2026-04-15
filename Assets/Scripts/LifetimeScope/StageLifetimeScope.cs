@@ -12,6 +12,7 @@ public class StageLifetimeScope : LifetimeScope
         // Services
         builder.Register<IOrderService, OrderService>(Lifetime.Singleton);
         builder.Register<ILevelProgressService, LevelProgressService>(Lifetime.Singleton);
+        builder.Register<CustomerService>(Lifetime.Singleton).AsImplementedInterfaces();
 
         // Factories
         builder.Register<SpawnFactory>(Lifetime.Singleton);

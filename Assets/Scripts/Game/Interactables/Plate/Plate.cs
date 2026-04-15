@@ -14,6 +14,7 @@ public class Plate : MonoBehaviour, ICarriable, IStackable
     [Inject] IOrderService _orderService;
 
     public string DisplayName => "Plate";
+    public List<IngredientObject> PlacedIngredients => _placedIngredients;
 
     public void OnPickedUp(Transform slot)
     {

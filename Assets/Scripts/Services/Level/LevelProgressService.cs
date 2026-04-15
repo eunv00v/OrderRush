@@ -16,7 +16,7 @@ public class LevelProgressService : ILevelProgressService
 
     public async UniTask LoadLevelsData()
     {
-        string path = PrefabKeys.GetPrefabPath(DataKeys.GetDataPath(DataKeys.LevelSettings));
+        string path = DataKeys.GetDataPath(DataKeys.LevelSettings);
         _levelsData = await _resourceLoader.LoadAsync<LevelsData>(path);
     }
 

@@ -10,8 +10,8 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
     private readonly IOrderService _orderService;
     private readonly LevelFactory _levelFactory;
 
-    private LevelData _currentLevelData;
-    private GameObject _currentLevelMap;
+    public LevelData CurrentLevelData { get; private set; }
+    public LevelContext CurrentLevelContext { get; private set; }
     private int _currentMoney;
     private float _elapsedTime;
     private bool _isLevelActive;
@@ -33,8 +33,8 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
         _isLevelActive = false;
 
         // 1. 레벨 데이터 가져오기
-        _currentLevelData = _levelsDataService.GetLevelData(levelNumber);
-        if (_currentLevelData == null)
+        CurrentLevelData = _levelsDataService.GetLevelData(levelNumber);
+        if (CurrentLevelData == null)
         {
             Debug.LogError($"Level {levelNumber} data not found!");
             return;
@@ -47,14 +47,14 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
             Debug.LogError($"Failed to load level map: Level{levelNumber}");
             return;
         }
-        _currentLevelMap = levelContext.gameObject;
+        CurrentLevelContext = levelContext;
 
         // 3. 초기화
         _currentMoney = 0;
         _elapsedTime = 0f;
         _isLevelActive = true;
 
-        Debug.Log($"Level {_currentLevelData.LevelNumber} loaded: {_currentLevelData.LevelName}");
+        Debug.Log($"Level {CurrentLevelData.LevelNumber} loaded: {CurrentLevelData.LevelName}");
     }
 
     public void AddMoney(int amount)
@@ -68,12 +68,12 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
 
     public void Tick()
     {
-        if (!_isLevelActive || _currentLevelData == null) return;
+        if (!_isLevelActive || CurrentLevelData == null) return;
 
         _elapsedTime += Time.deltaTime;
 
         // 시간 제한 체크
-        if (_currentLevelData.TimeLimit > 0 && _elapsedTime >= _currentLevelData.TimeLimit)
+        if (CurrentLevelData.TimeLimit > 0 && _elapsedTime >= CurrentLevelData.TimeLimit)
         {
             CheckLevelFailed();
         }
@@ -81,28 +81,28 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
 
     private void CheckLevelCompleted()
     {
-        if (_currentMoney >= _currentLevelData.TargetMoney)
+        if (_currentMoney >= CurrentLevelData.TargetMoney)
         {
             _isLevelActive = false;
-            _levelsDataService.SetMaxReachedLevel(_currentLevelData.LevelNumber + 1);
-            Debug.Log($"Level {_currentLevelData.LevelNumber} completed!");
+            _levelsDataService.SetMaxReachedLevel(CurrentLevelData.LevelNumber + 1);
+            Debug.Log($"Level {CurrentLevelData.LevelNumber} completed!");
         }
     }
 
     private void CheckLevelFailed()
     {
-        if (_currentMoney < _currentLevelData.TargetMoney)
+        if (_currentMoney < CurrentLevelData.TargetMoney)
         {
             _isLevelActive = false;
-            Debug.Log($"Level {_currentLevelData.LevelNumber} failed!");
+            Debug.Log($"Level {CurrentLevelData.LevelNumber} failed!");
         }
     }
 
     public void Dispose()
     {
-        if (_currentLevelMap != null && _currentLevelData != null)
+        if (CurrentLevelContext != null && CurrentLevelData != null)
         {
-            _levelFactory.ReleaseLevelContext(_currentLevelData.LevelNumber);
+            _levelFactory.ReleaseLevelContext(CurrentLevelData.LevelNumber);
         }
     }
 }

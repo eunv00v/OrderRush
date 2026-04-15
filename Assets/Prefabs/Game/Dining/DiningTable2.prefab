@@ -154,7 +154,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Stove
+  m_text: Table
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -250,6 +250,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7853011496070804261}
+  - component: {fileID: 3790663053276441464}
   m_Layer: 0
   m_Name: DiningTable2
   m_TagString: Untagged
@@ -273,8 +274,77 @@ Transform:
   - {fileID: 2068634033547925977}
   - {fileID: 414800209321899371}
   - {fileID: 7184443215371588982}
+  - {fileID: 7545745385884739107}
+  - {fileID: 7499600032774800019}
+  - {fileID: 5032947912562694415}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &3790663053276441464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6115416577740994934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39e61b28abf0b4940960f0cef3bcb27e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiningTable
+  _interactPoint: {fileID: 7853011496070804261}
+  _plateSlots:
+  - {fileID: 7184443215371588982}
+  - {fileID: 7545745385884739107}
+  _seats:
+  - {fileID: 8014571667285459256}
+  - {fileID: 4823930781647690404}
+--- !u!1 &6850550028071199150
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7545745385884739107}
+  - component: {fileID: 4951998178941056435}
+  m_Layer: 0
+  m_Name: Slot (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7545745385884739107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6850550028071199150}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7853011496070804261}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4951998178941056435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6850550028071199150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e2be834f84ef436f9860ad56dc511b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractPointGizmo
+  _normalColor: {r: 1, g: 0, b: 1, a: 1}
+  _selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _radius: 0.3
 --- !u!1 &7364564437329311535
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,3 +474,149 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!1001 &4787407528613387702
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7853011496070804261}
+    m_Modifications:
+    - target: {fileID: 557645157534504200, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_Name
+      value: DiningChair
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+--- !u!4 &7499600032774800019 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+  m_PrefabInstance: {fileID: 4787407528613387702}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8014571667285459256 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3263196303483329678, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+  m_PrefabInstance: {fileID: 4787407528613387702}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f35d9670977614c029f90901460cd4e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiningSeat
+--- !u!1001 &8051091170640725546
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7853011496070804261}
+    m_Modifications:
+    - target: {fileID: 557645157534504200, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_Name
+      value: DiningChair (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+--- !u!114 &4823930781647690404 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3263196303483329678, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+  m_PrefabInstance: {fileID: 8051091170640725546}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f35d9670977614c029f90901460cd4e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiningSeat
+--- !u!4 &5032947912562694415 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
+  m_PrefabInstance: {fileID: 8051091170640725546}
+  m_PrefabAsset: {fileID: 0}

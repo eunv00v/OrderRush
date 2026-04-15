@@ -37,7 +37,11 @@ ProjectLifetimeScope          ← VContainerSettings Root로 등록, 앱 전체 
 
 **StageLifetimeScope**
 - IOrderService, OrderService (Singleton)
+- ILevelProgressService, LevelProgressService (Singleton)
 - SpawnFactory (Singleton)
+- LevelFactory (Scoped)
+- LevelContextPresenter (Scoped)
+- GameInitiator (EntryPoint) ← 레벨 데이터 초기화 및 레벨 로드
 - PlayerInputHandler (EntryPoint)
 
 ---
@@ -48,6 +52,34 @@ ProjectLifetimeScope          ← VContainerSettings Root로 등록, 앱 전체 
 - 캐릭터의 모든 행동을 큐로 관리하여 순차 실행
 - IGameAction 기반 행동 시스템 (MoveAction, InteractAction)
 - 재클릭 시 현재 큐 취소 후 새 행동 시작
+
+### 레벨 시스템
+
+**LevelProgressService**
+레벨 진행도 및 상태를 관리하는 서비스
+- 레벨 데이터 로드 (LevelsData ScriptableObject)
+- 최대 도달 레벨 추적 (PlayerPrefs 저장)
+- 선택된 레벨 관리 (로비에서 설정, GameInitiator에서 사용)
+
+**레벨 로딩 플로우**
+```
+GameInitiator.Start()
+├── 1. LevelProgressService.LoadLevelsData() ← ScriptableObject 로드
+├── 2. LevelProgressService.LoadMaxReachedLevel() ← PlayerPrefs에서 진행도 로드
+├── 3. GetSelectedLevel() ← 선택된 레벨 번호 가져오기 (기본값: 1)
+└── 4. LevelContextPresenter.LoadLevelContext(levelNumber)
+    ├── LevelProgressService에서 LevelData 조회
+    ├── LevelFactory로 레벨 맵 프리팹 생성
+    └── 레벨 상태 초기화 (돈, 시간, 활성화)
+```
+
+**로비에서 레벨 선택 시 (추후 구현)**
+```csharp
+// 로비에서
+_levelProgressService.SetSelectedLevel(selectedLevel);
+SceneManager.LoadScene("Gameplay");
+// → GameInitiator가 선택된 레벨을 자동으로 로드
+```
 
 ### 재료 & 레시피 데이터 구조
 

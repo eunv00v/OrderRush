@@ -7,17 +7,18 @@ public class OrderService : IOrderService
     private readonly List<Order> _activeOrders = new();
     private const float DEFAULT_TIME_LIMIT = 60f;
 
-    public void AddOrder(RecipeData recipe)
+    public Order AddOrder(RecipeData recipe)
     {
         if (recipe == null)
         {
             Debug.LogWarning("Cannot add order with null recipe");
-            return;
+            return null;
         }
 
         var order = new Order(recipe, DEFAULT_TIME_LIMIT);
         _activeOrders.Add(order);
         Debug.Log($"New order added: {recipe.RecipeName} (Time limit: {DEFAULT_TIME_LIMIT}s)!");
+        return order;
     }
 
     public void CompleteOrder(Order order)
