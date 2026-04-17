@@ -4,10 +4,11 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
+using JetBrains.Annotations;
 
 public class Plate : MonoBehaviour, ICarriable, IStackable
 {
-    [SerializeField] Transform _ingredientSlot;
+    [NotNull][SerializeField] Transform _ingredientSlot;
 
     List<IngredientObject> _placedIngredients = new();
 

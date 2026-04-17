@@ -3,7 +3,7 @@ using VContainer;
 
 public class DiningSeat : MonoBehaviour
 {
-    [SerializeField] Transform _sitPoint;
+    [NotNull][SerializeField] Transform _sitPoint;
 
     private CustomerCharacter _currentCustomer;
     private int _seatIndex;

@@ -1,10 +1,11 @@
 using UnityEngine;
+using JetBrains.Annotations;
 
 public abstract class CharacterBase : MonoBehaviour
 {
-    [SerializeField] protected Transform _itemSlot;
-    [SerializeField] protected ActionExecutor _actionExecutor;
-    [SerializeField] protected NavMeshMover _mover;
+    [NotNull][SerializeField] protected Transform _itemSlot;
+    [NotNull][SerializeField] protected ActionExecutor _actionExecutor;
+    [NotNull][SerializeField] protected NavMeshMover _mover;
 
     public bool IsHolding => CurrentCarriable != null;
     public ICarriable CurrentCarriable { get; protected set; }

@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using JetBrains.Annotations;
 
 public class DiningTable : MonoBehaviour, IInteractable
 {
-    [SerializeField] Transform _interactPoint;
-    [SerializeField] Transform[] _plateSlots;
-    [SerializeField] DiningSeat[] _seats;
+    [NotNull][SerializeField] Transform _interactPoint;
+    [NotNull][SerializeField] Transform[] _plateSlots;
+    [NotNull][SerializeField] DiningSeat[] _seats;
 
     public string DisplayName => "DiningTable";
     public Transform InteractPoint => _interactPoint;
@@ -36,12 +37,10 @@ public class DiningTable : MonoBehaviour, IInteractable
 
     public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
-        // 플레이어가 음식을 들고 있으면 → 서빙
         if (character.IsHolding)
         {
             await ServeFood(character);
         }
-        // 플레이어가 빈손이면 → 접시 픽업
         else
         {
             await PickUpPlate(character);

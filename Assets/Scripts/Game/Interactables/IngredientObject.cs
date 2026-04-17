@@ -1,8 +1,9 @@
 using UnityEngine;
+using JetBrains.Annotations;
 
 public class IngredientObject : MonoBehaviour, ICarriable
 {
-    [SerializeField] Renderer _renderer;
+    [NotNull][SerializeField] Renderer _renderer;
     public IngredientData Data { get; private set; }
     public bool IsRuined { get; private set; }
 

@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
+using JetBrains.Annotations;
 
 public class CookingProgressView : MonoBehaviour
 {
-    [SerializeField] Image _fill;
-    [SerializeField] GameObject _view;
+    [NotNull][SerializeField] Image _fill;
+    [NotNull][SerializeField] GameObject _view;
 
     void Awake()
     {

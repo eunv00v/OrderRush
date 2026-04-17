@@ -2,12 +2,13 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
+using JetBrains.Annotations;
 
 public class PlateRack : MonoBehaviour, IInteractable
 {
-    [SerializeField] Transform _interactPoint;
+    [NotNull][SerializeField] Transform _interactPoint;
     [SerializeField] int _quantity = 5;
-    [SerializeField] Transform _plateVisual;
+    [NotNull][SerializeField] Transform _plateVisual;
     [SerializeField] float _heightPerPlate = 0.2f;
 
     private SpawnFactory _factory;

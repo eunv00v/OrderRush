@@ -3,14 +3,15 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
+using JetBrains.Annotations;
 
 public abstract class CookingToolBase : MonoBehaviour, IInteractable
 {
     [Header("Interaction")]
-    [SerializeField] protected Transform _interactPoint;
-    [SerializeField] protected Transform _ingredientSlot;
-    [SerializeField] protected Canvas _canvas;
-    [SerializeField] protected CookingProgressView _progressView;
+    [NotNull][SerializeField] protected Transform _interactPoint;
+    [NotNull][SerializeField] protected Transform _ingredientSlot;
+    [NotNull][SerializeField] protected Canvas _canvas;
+    [NotNull][SerializeField] protected CookingProgressView _progressView;
 
     protected IngredientObject _currentIngredientObject;
 

@@ -2,13 +2,14 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
+using JetBrains.Annotations;
 
 public class StorageBase : MonoBehaviour, IInteractable
 {
     [SerializeField] string _displayName = "Storage";
-    [SerializeField] IngredientData _ingredient;
+    [NotNull][SerializeField] IngredientData _ingredient;
     [SerializeField] int _quantity = -1; // -1이면 무한
-    [SerializeField] Transform _interactPoint;
+    [NotNull][SerializeField] Transform _interactPoint;
 
     public string DisplayName => _displayName;
     public Transform InteractPoint => _interactPoint;

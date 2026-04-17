@@ -1,12 +1,13 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using JetBrains.Annotations;
 
 public class KitchenTable : MonoBehaviour, IInteractable
 {
-    [SerializeField] Transform _interactPoint;
-    [SerializeField] Transform _slot;
-    [SerializeField] Plate _initialPlate;
+    [NotNull][SerializeField] Transform _interactPoint;
+    [NotNull][SerializeField] Transform _slot;
+    [SerializeField] Plate _initialPlate; // Can be null
 
     ICarriable _carriable;
 

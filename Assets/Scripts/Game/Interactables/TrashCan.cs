@@ -1,10 +1,11 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using JetBrains.Annotations;
 
 public class TrashCan : MonoBehaviour, IInteractable
 {
-    [SerializeField] private Transform _interactPoint;
+    [NotNull][SerializeField] private Transform _interactPoint;
 
     public string DisplayName => "TrashCan";
     public Transform InteractPoint => _interactPoint;

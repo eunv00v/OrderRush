@@ -278,8 +278,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelContext
   _diningTables:
   - {fileID: 3874728149553619061}
-  _spawnPoint: {fileID: 0}
-  _waitingPoint: {fileID: 0}
+  _spawnPoint: {fileID: 3920452141411397064}
+  _waitingPoint: {fileID: 7440876858310684795}
 --- !u!1 &2687506922244717250
 GameObject:
   m_ObjectHideFlags: 0
