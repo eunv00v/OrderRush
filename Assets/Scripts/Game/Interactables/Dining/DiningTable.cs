@@ -37,14 +37,20 @@ public class DiningTable : MonoBehaviour, IInteractable
 
     public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
+        Debug.Log($"[DiningTable] InteractAsync START - character: {character.name}, IsHolding: {character.IsHolding}");
+
         if (character.IsHolding)
         {
+            Debug.Log("[DiningTable] Branch: Serving food...");
             await ServeFood(character);
         }
         else
         {
+            Debug.Log("[DiningTable] Branch: Picking up plate...");
             await PickUpPlate(character);
         }
+
+        Debug.Log("[DiningTable] InteractAsync END");
     }
 
     private async UniTask ServeFood(CharacterBase character)

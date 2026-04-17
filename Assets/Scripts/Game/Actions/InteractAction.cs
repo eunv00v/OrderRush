@@ -21,9 +21,9 @@ public class InteractAction : IGameAction
         var interactPoint = _target.InteractPoint.position;
 
         // InteractPoint로 이동 가능한지 확인
-        if (!NavMesh.SamplePosition(interactPoint, out var navHit, 0.5f, NavMesh.AllAreas))
+        if (!NavMesh.SamplePosition(interactPoint, out var navHit, 2.0f, NavMesh.AllAreas))
         {
-            Debug.LogWarning($"Cannot navigate to {_target.DisplayName}");
+            Debug.LogWarning($"[InteractAction] Cannot navigate to {_target.DisplayName}");
             return;
         }
 
