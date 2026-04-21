@@ -1,8 +1,6 @@
 # Order Rush
 
 모바일 환경에서 터치 기반 입력과 행동 큐 시스템을 활용한 자동화 주방 시뮬레이션 게임.
-클라이언트 시스템 설계 능력을 보여주는 포트폴리오 프로젝트.
-
 ---
 
 ## 작업 규칙
@@ -22,42 +20,32 @@
 
 ## 기술 스택
 
-| 역할 | 라이브러리 |
-|------|-----------|
-| DI | VContainer 1.17.0 |
-| UI 패턴 | MVP (Model-View-Presenter) |
-| 비동기 | UniTask |
-| Reactive UI | UniRx 7.1.0 (View 전용) |
-| 프레임 루프 | UpdateSubscriptionService |
-| 이벤트 | MessagePipe |
-| 이동 | AI Navigation (NavMesh) |
-| 트위닝 | DOTween |
+| 역할        | 라이브러리                 |
+| ----------- | -------------------------- |
+| DI          | VContainer 1.17.0          |
+| UI 패턴     | MVP (Model-View-Presenter) |
+| 비동기      | UniTask                    |
+| Reactive UI | UniRx 7.1.0 (View 전용)    |
+| 프레임 루프 | UpdateSubscriptionService  |
+| 이벤트      | MessagePipe                |
+| 이동        | AI Navigation (NavMesh)    |
+| 트위닝      | DOTween                    |
 
 ---
 
 ## VContainer Scope 계층 구조
 
 ```
-ProjectLifetimeScope          ← VContainerSettings Root로 등록, 앱 전체 생존
-├── LobbyLifetimeScope        ← 로비 씬 (추후 구현)
-└── StageLifetimeScope        ← 게임 플레이 씬, 스테이지마다 생성/소멸
+RootScene        ← index 0, 항상 존재
+└── ProjectLifetimeScope
+
+LobbyScene       ← Additive 로드/언로드
+└── LobbyLifetimeScope (parent = ProjectLifetimeScope)
+
+GameplayScene    ← Additive 로드/언로드
+└── GameLifetimeScope (parent = ProjectLifetimeScope)
+    └── 맵 프리펩 (level1, level2... DayData 기반 런타임 로드)
 ```
-
-### 등록 내용
-**ProjectLifetimeScope**
-- MessagePipe
-- UpdateSubscriptionService (AsImplementedInterfaces)
-- IResourcesLoaderService, ResourcesLoaderService (Singleton)
-- Launcher (EntryPoint) ← 첫 씬 로드 담당
-
-**StageLifetimeScope**
-- IOrderService, OrderService (Singleton)
-- ILevelProgressService, LevelProgressService (Singleton)
-- SpawnFactory (Singleton)
-- LevelFactory (Scoped)
-- LevelContextPresenter (Scoped)
-- GameInitiator (EntryPoint) ← 레벨 데이터 초기화 및 레벨 로드
-- PlayerInputHandler (EntryPoint)
 
 ---
 

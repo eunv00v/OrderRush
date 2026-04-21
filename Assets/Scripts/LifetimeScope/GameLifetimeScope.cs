@@ -3,7 +3,7 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-public class StageLifetimeScope : LifetimeScope
+public class GameLifetimeScope : LifetimeScope
 {
     [SerializeField] Transform _root;
 

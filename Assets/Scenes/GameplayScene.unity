@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 209476998}
   - component: {fileID: 209476997}
   m_Layer: 0
-  m_Name: StageLifetimeScope
+  m_Name: GameLifetimeScope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -384,7 +384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258402942}
   m_Layer: 0
-  m_Name: Level
+  m_Name: GameRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

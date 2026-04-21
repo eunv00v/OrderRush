@@ -9,13 +9,13 @@ using System;
 public class SceneBootstrapper
 {
     const string PreviousSceneKey = "PreviousScene";
-    const string LauncherButtonPressedKey = "LauncherButtonPressed";
-    const string LauncherScenePath = "Assets/Scenes/Launcher.unity";
+    const string BootstrapButtonPressedKey = "BootstrapButtonPressed";
+    const string BootstrapScenePath = "Assets/Scenes/Bootstrap.unity";
 
-    static bool IsLauncherButtonPressed
+    static bool IsBootstrapButtonPressed
     {
-        get => EditorPrefs.GetBool(LauncherButtonPressedKey, false);
-        set => EditorPrefs.SetBool(LauncherButtonPressedKey, value);
+        get => EditorPrefs.GetBool(BootstrapButtonPressedKey, false);
+        set => EditorPrefs.SetBool(BootstrapButtonPressedKey, value);
     }
 
     static string BootstrapScene =>
@@ -59,12 +59,12 @@ public class SceneBootstrapper
         if (playModeButtons == null) return;
 
         var btn = new Button();
-        btn.text = $"Launcher";
+        btn.text = $"Bootstrap";
         btn.AddToClassList("unity-editor-toolbar-element");
         btn.style.alignSelf = Align.Center;
         btn.clicked += () =>
         {
-            IsLauncherButtonPressed = true;
+            IsBootstrapButtonPressed = true;
             EditorApplication.isPlaying = true;
         };
 
@@ -77,27 +77,27 @@ public class SceneBootstrapper
     {
         if (state == PlayModeStateChange.ExitingEditMode)
         {
-            if (IsLauncherButtonPressed)
+            if (IsBootstrapButtonPressed)
             {
                 PreviousScene = EditorSceneManager.GetActiveScene().path;
 
                 if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 {
-                    EditorSceneManager.OpenScene(LauncherScenePath);
+                    EditorSceneManager.OpenScene(BootstrapScenePath);
                 }
                 else
                 {
                     EditorApplication.isPlaying = false;
-                    IsLauncherButtonPressed = false;
+                    IsBootstrapButtonPressed = false;
                 }
             }
         }
         else if (state == PlayModeStateChange.EnteredEditMode)
         {
-            if (IsLauncherButtonPressed && !string.IsNullOrEmpty(PreviousScene))
+            if (IsBootstrapButtonPressed && !string.IsNullOrEmpty(PreviousScene))
             {
                 EditorSceneManager.OpenScene(PreviousScene);
-                IsLauncherButtonPressed = false;
+                IsBootstrapButtonPressed = false;
             }
         }
     }
