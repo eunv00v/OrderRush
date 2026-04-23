@@ -30,7 +30,7 @@ public class CustomerCharacter : CharacterBase
         AssignedSeat = targetSeat;
 
         // 이동 → 착석 → 주문 생성
-        EnqueueAction(new MoveAction(_mover, targetSeat.SitPoint.position));
+        EnqueueAction(new MoveAction(_mover, targetSeat.SitPoint.position, _animator));
         EnqueueAction(new SitAction(this, targetSeat));
         EnqueueAction(new OrderAction(this, recipe));
     }
@@ -69,7 +69,7 @@ public class CustomerCharacter : CharacterBase
         AssignedSeat.Clear();
 
         // 스폰 포지션으로 이동
-        EnqueueAction(new MoveAction(_mover, _spawnPosition));
+        EnqueueAction(new MoveAction(_mover, _spawnPosition, _animator));
 
         // 이동 완료 후 사라지기 (ActionExecutor의 큐가 비워지면)
         await UniTask.WaitUntil(() => !IsExecuting);

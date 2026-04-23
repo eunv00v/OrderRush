@@ -5,6 +5,7 @@ public abstract class CharacterBase : MonoBehaviour
     [NotNull][SerializeField] protected Transform _itemSlot;
     [NotNull][SerializeField] protected ActionExecutor _actionExecutor;
     [NotNull][SerializeField] protected NavMeshMover _mover;
+    [NotNull][SerializeField] protected CharacterAnimator _animator;
 
     public bool IsHolding => CurrentCarriable != null;
     public ICarriable CurrentCarriable { get; protected set; }
@@ -26,7 +27,8 @@ public abstract class CharacterBase : MonoBehaviour
         }
 
         CurrentCarriable = item;
-        item.OnPickedUp(ItemSlot);  // 아이템 위치 자동 이동
+        item.OnPickedUp(ItemSlot);
+        _animator.TriggerPickUp();
 
         Debug.Log($"[{gameObject.name}] Picked up: {item}");
     }
@@ -41,6 +43,7 @@ public abstract class CharacterBase : MonoBehaviour
 
         var item = CurrentCarriable;
         CurrentCarriable = null;
+        _animator.TriggerPutDown();
         Debug.Log($"[{gameObject.name}] Put down: {item}");
         return item;
     }
