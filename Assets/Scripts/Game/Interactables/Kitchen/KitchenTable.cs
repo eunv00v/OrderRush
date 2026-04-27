@@ -2,16 +2,13 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class KitchenTable : MonoBehaviour, IInteractable
+public class KitchenTable : InteractableBase
 {
-    [NotNull][SerializeField] Transform _interactPoint;
+
     [NotNull][SerializeField] Transform _slot;
-    [SerializeField] Plate _initialPlate; // Can be null
+    [SerializeField] Plate _initialPlate;
 
     ICarriable _carriable;
-
-    public string DisplayName => "Kitchen Table";
-    public Transform InteractPoint => _interactPoint;
 
     void Awake()
     {
@@ -22,7 +19,7 @@ public class KitchenTable : MonoBehaviour, IInteractable
         }
     }
 
-    public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+    public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         if (character == null)
         {

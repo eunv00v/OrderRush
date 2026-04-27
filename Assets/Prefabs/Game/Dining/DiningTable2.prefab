@@ -250,7 +250,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7853011496070804261}
-  - component: {fileID: 3790663053276441464}
   m_Layer: 0
   m_Name: DiningTable2
   m_TagString: Untagged
@@ -279,25 +278,6 @@ Transform:
   - {fileID: 5032947912562694415}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!114 &3790663053276441464
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6115416577740994934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39e61b28abf0b4940960f0cef3bcb27e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DiningTable
-  _interactPoint: {fileID: 7853011496070804261}
-  _plateSlots:
-  - {fileID: 7184443215371588982}
-  - {fileID: 7545745385884739107}
-  _seats:
-  - {fileID: 8014571667285459256}
-  - {fileID: 4823930781647690404}
 --- !u!1 &6850550028071199150
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,17 +516,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}
   m_PrefabInstance: {fileID: 4787407528613387702}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8014571667285459256 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3263196303483329678, guid: 78565d85893624e8a8184c162c049c91, type: 3}
-  m_PrefabInstance: {fileID: 4787407528613387702}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35d9670977614c029f90901460cd4e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DiningSeat
 --- !u!1001 &8051091170640725546
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -604,17 +573,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78565d85893624e8a8184c162c049c91, type: 3}
---- !u!114 &4823930781647690404 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3263196303483329678, guid: 78565d85893624e8a8184c162c049c91, type: 3}
-  m_PrefabInstance: {fileID: 8051091170640725546}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35d9670977614c029f90901460cd4e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DiningSeat
 --- !u!4 &5032947912562694415 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3054469374913339173, guid: 78565d85893624e8a8184c162c049c91, type: 3}

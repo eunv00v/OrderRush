@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Stove : CookingToolBase
 {
-    public override string DisplayName => "Stove";
-
 
     private CancellationTokenSource _cookingCts;
     private float _cookingElapsedTime;
@@ -22,7 +20,7 @@ public class Stove : CookingToolBase
         var transition = CurrentIngredientData.Transitions.Find(t => t.Type == TransitionType.Cook);
         if (transition == null)
         {
-            Debug.Log($"[{DisplayName}] 조리할 수 없는 재료입니다.");
+            Debug.Log("조리할 수 없는 재료입니다.");
             return;
         }
 
@@ -65,7 +63,7 @@ public class Stove : CookingToolBase
         }
         catch (OperationCanceledException)
         {
-            Debug.Log($"[{DisplayName}] 요리가 중단되었습니다.");
+            Debug.Log("요리가 중단되었습니다.");
         }
         finally
         {

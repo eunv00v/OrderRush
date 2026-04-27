@@ -48,6 +48,16 @@ public abstract class CharacterBase : MonoBehaviour
         return item;
     }
 
+    public void StartWorking()
+    {
+        _animator.SetWorking(true);
+    }
+
+    public void StopWorking()
+    {
+        _animator.SetWorking(false);
+    }
+
     public void EnqueueAction(IGameAction action)
     {
         _actionExecutor.Enqueue(action);

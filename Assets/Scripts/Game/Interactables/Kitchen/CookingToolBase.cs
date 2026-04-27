@@ -4,18 +4,14 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public abstract class CookingToolBase : MonoBehaviour, IInteractable
+public abstract class CookingToolBase : InteractableBase
 {
-    [Header("Interaction")]
-    [NotNull][SerializeField] protected Transform _interactPoint;
+
     [NotNull][SerializeField] protected Transform _ingredientSlot;
     [NotNull][SerializeField] protected Canvas _canvas;
     [NotNull][SerializeField] protected CookingProgressView _progressView;
 
     protected IngredientObject _currentIngredientObject;
-
-    public abstract string DisplayName { get; }
-    public Transform InteractPoint => _interactPoint;
     public IngredientData CurrentIngredientData => _currentIngredientObject != null ? _currentIngredientObject.Data : null;
     public bool HasIngredient => _currentIngredientObject != null;
 
@@ -43,27 +39,27 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
     {
         if (HasIngredient)
         {
-            Debug.LogWarning($"[{DisplayName}] 이미 재료가 있습니다.");
+            Debug.LogWarning("이미 재료가 있습니다.");
             return;
         }
 
         _currentIngredientObject = ingredientObject;
         ingredientObject.SetData(ingredient);
-        Debug.Log($"[{DisplayName}] 재료 배치: {ingredient.IngredientName}");
+        Debug.Log($"재료 배치: {ingredient.IngredientName}");
     }
 
     public virtual void RemoveIngredient()
     {
         if (!HasIngredient)
         {
-            Debug.LogWarning($"[{DisplayName}] 재료가 없습니다.");
+            Debug.LogWarning("재료가 없습니다.");
             return;
         }
 
         var ingredientData = _currentIngredientObject.Data;
         _currentIngredientObject = null;
         StopCooking();
-        Debug.Log($"[{DisplayName}] 재료 제거: {ingredientData.IngredientName}");
+        Debug.Log($"재료 제거: {ingredientData.IngredientName}");
 
     }
 
@@ -92,7 +88,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
     }
 
 
-    public virtual async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+    public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         Debug.Log($"[CookingToolBase] InteractAsync 호출됨 - IsHolding: {character.IsHolding}, IsOccupied: {HasIngredient}");
 
@@ -105,7 +101,7 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
                 character.PickUp(_currentIngredientObject);
                 await plate.Stack(_currentIngredientObject, character, ct);
                 character.PickUp(plate);
-                Debug.Log($"[{DisplayName}] 접시에 재료 올림: {_currentIngredientObject.Data.IngredientName}");
+                Debug.Log($"접시에 재료 올림: {_currentIngredientObject.Data.IngredientName}");
                 RemoveIngredient();
             }
             // 2. 재료를 들고 있고 재료가 없으면 → 재료 올리기
@@ -118,11 +114,11 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
                     ingredientObj.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
                     PlaceIngredient(ingredientObj.Data, ingredientObj);
                     StartCooking();
-                    Debug.Log($"[{DisplayName}] 재료 올림: {ingredientObj.Data.IngredientName}");
+                    Debug.Log($"재료 올림: {ingredientObj.Data.IngredientName}");
                 }
                 else
                 {
-                    Debug.LogWarning($"[{DisplayName}] 이 도구에 올릴 수 없는 재료입니다.");
+                    Debug.LogWarning("이 도구에 올릴 수 없는 재료입니다.");
                 }
             }
         }
@@ -134,11 +130,11 @@ public abstract class CookingToolBase : MonoBehaviour, IInteractable
             {
                 character.PickUp(_currentIngredientObject);
                 RemoveIngredient();
-                Debug.Log($"[{DisplayName}] 재료 집음: {_currentIngredientObject.Data.IngredientName}");
+                Debug.Log($"재료 집음: {_currentIngredientObject.Data.IngredientName}");
             }
         }
 
-        Debug.Log($"[{DisplayName}] IsCooking: {IsCooking}, IsOccupied: {HasIngredient}");
+        Debug.Log($"IsCooking: {IsCooking}, IsOccupied: {HasIngredient}");
 
         await UniTask.CompletedTask;
     }

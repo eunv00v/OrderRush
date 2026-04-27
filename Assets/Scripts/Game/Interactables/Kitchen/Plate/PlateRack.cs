@@ -3,17 +3,13 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public class PlateRack : MonoBehaviour, IInteractable
+public class PlateRack : InteractableBase
 {
-    [NotNull][SerializeField] Transform _interactPoint;
-    [SerializeField] int _quantity = 4;
     [NotNull][SerializeField] GameObject[] _plates;
+    [SerializeField] int _quantity = 4;
 
     private SpawnFactory _factory;
     private int _currentPlateIndex;
-
-    public string DisplayName => "Plate Rack";
-    public Transform InteractPoint => _interactPoint;
 
     [Inject]
     public void Construct(SpawnFactory factory)
@@ -30,7 +26,7 @@ public class PlateRack : MonoBehaviour, IInteractable
         }
     }
 
-    public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+    public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         if (character == null) return;
 

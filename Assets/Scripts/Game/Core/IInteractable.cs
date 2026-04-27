@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IInteractable
 {
-    string DisplayName { get; }
     Transform InteractPoint { get; }
     UniTask InteractAsync(CharacterBase character, CancellationToken ct);
+    void SetHighlight(bool highlight);
 }

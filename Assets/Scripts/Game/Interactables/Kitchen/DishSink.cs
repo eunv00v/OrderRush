@@ -3,9 +3,8 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class DishSink : MonoBehaviour, IInteractable
+public class DishSink : InteractableBase
 {
-    [NotNull][SerializeField] Transform _interactPoint;
     [NotNull][SerializeField] Transform _plateSlot;
     [NotNull][SerializeField] Canvas _canvas;
     [NotNull][SerializeField] CookingProgressView _progressView;
@@ -13,15 +12,12 @@ public class DishSink : MonoBehaviour, IInteractable
     private Plate _currentPlate;
     private const float WASH_DURATION = 3f;
 
-    public string DisplayName => "Dish Sink";
-    public Transform InteractPoint => _interactPoint;
-
     void Awake()
     {
         _canvas.worldCamera = Camera.main;
     }
 
-    public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+    public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         if (character == null) return;
 
@@ -111,4 +107,5 @@ public class DishSink : MonoBehaviour, IInteractable
         _progressView.SetVisible(false);
         _progressView.SetProgress(0);
     }
+
 }

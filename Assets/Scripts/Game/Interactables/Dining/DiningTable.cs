@@ -4,14 +4,11 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class DiningTable : MonoBehaviour, IInteractable
+public class DiningTable : InteractableBase
 {
-    [NotNull][SerializeField] Transform _interactPoint;
     [NotNull][SerializeField] Transform[] _plateSlots;
     [NotNull][SerializeField] DiningSeat[] _seats;
 
-    public string DisplayName => "DiningTable";
-    public Transform InteractPoint => _interactPoint;
     private List<Plate> _currentPlates = new List<Plate>();
 
     void Awake()
@@ -36,7 +33,7 @@ public class DiningTable : MonoBehaviour, IInteractable
     }
 
 
-    public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
+    public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         Debug.Log($"[DiningTable] InteractAsync START - character: {character.name}, IsHolding: {character.IsHolding}");
 

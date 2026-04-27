@@ -29,32 +29,38 @@ public class InteractAction : IGameAction
             return;
         }
 
-        // InteractPoint로 이동
-        _animator.SetSpeed(1f);
-        await _mover.MoveToAsync(navHit.position, ct);
-        _animator.SetSpeed(0f);
-
-
-        // 타겟을 바라보도록 회전
-        Vector3 lookDirection;
-        if (_target.InteractPoint.parent != null)
+        try
         {
-            lookDirection = _target.InteractPoint.parent.position - _character.transform.position;
-        }
-        else
-        {
-            lookDirection = _target.InteractPoint.position - _character.transform.position;
-        }
+            // InteractPoint로 이동
+            _target.SetHighlight(true);
+            _animator.SetSpeed(1f);
+            await _mover.MoveToAsync(navHit.position, ct);
+            _animator.SetSpeed(0f);
 
-        lookDirection.y = 0;
-        if (lookDirection.sqrMagnitude > 0.001f)
-        {
-            _character.transform.rotation = Quaternion.LookRotation(lookDirection);
-        }
 
-        // 상호작용 실행
-        _animator.SetWorking(true);
-        await _target.InteractAsync(_character, ct);
-        _animator.SetWorking(false);
+            // 타겟을 바라보도록 회전
+            Vector3 lookDirection;
+            if (_target.InteractPoint.parent != null)
+            {
+                lookDirection = _target.InteractPoint.parent.position - _character.transform.position;
+            }
+            else
+            {
+                lookDirection = _target.InteractPoint.position - _character.transform.position;
+            }
+
+            lookDirection.y = 0;
+            if (lookDirection.sqrMagnitude > 0.001f)
+            {
+                _character.transform.rotation = Quaternion.LookRotation(lookDirection);
+            }
+
+            // 상호작용 실행
+            await _target.InteractAsync(_character, ct);
+        }
+        finally
+        {
+            _target.SetHighlight(false);
+        }
     }
 }

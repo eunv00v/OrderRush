@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1073494878870338680}
-  - component: {fileID: 2745852917220225698}
   m_Layer: 0
   m_Name: DoubleSink
   m_TagString: Untagged
@@ -37,21 +36,6 @@ Transform:
   - {fileID: 3460572977906334445}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2745852917220225698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1528788468686704583}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17d909a5bb2d2470586c6a901e6003cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KitchenTable
-  _interactPoint: {fileID: 2511746412812462719}
-  _slot: {fileID: 5384152229995862062}
-  _initialPlate: {fileID: 0}
 --- !u!1 &6375359281576562875
 GameObject:
   m_ObjectHideFlags: 0

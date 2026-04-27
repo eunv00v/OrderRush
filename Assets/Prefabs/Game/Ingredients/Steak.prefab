@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce045ea7bc6f145e6a60255a71f75d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IngredientObject
-  _renderer: {fileID: 0}
+  _renderer: {fileID: 8422577148805706206}
 --- !u!1001 &4222548767540754843
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -106,5 +106,10 @@ PrefabInstance:
 --- !u!4 &7253097323960273585 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6787395422764315434, guid: e782a02483e69374fb101c6ab449424f, type: 3}
+  m_PrefabInstance: {fileID: 4222548767540754843}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8422577148805706206 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5654974057643591749, guid: e782a02483e69374fb101c6ab449424f, type: 3}
   m_PrefabInstance: {fileID: 4222548767540754843}
   m_PrefabAsset: {fileID: 0}
