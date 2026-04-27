@@ -15,6 +15,7 @@ public class Refrigerator : InteractableBase
     public bool IsEmpty => _currentPlateIndex == 0;
     private SpawnFactory _factory;
     private int _currentPlateIndex;
+    private bool _isDoorOpen = false;
 
     [Inject]
     public void Construct(SpawnFactory factory)
@@ -73,12 +74,12 @@ public class Refrigerator : InteractableBase
             }
         }
 
-        CloseDoorAnimation();
-
     }
 
     private UniTask OpenDoorAnimation()
     {
+        _isDoorOpen = true;
+        _doorTransform.DOKill();
         var tcs = new UniTaskCompletionSource();
         _doorTransform.DOLocalRotate(new Vector3(0, -90, 0), 0.5f)
             .SetEase(Ease.OutBack)
@@ -86,9 +87,24 @@ public class Refrigerator : InteractableBase
         return tcs.Task;
     }
 
+    void OnTriggerExit(Collider other)
+    {
+        Debug.Log($"[Refrigerator] OnTriggerExit - Object: {other.name}, Tag: {other.tag}, _isDoorOpen: {_isDoorOpen}");
+
+        if (other.CompareTag("Player") && _isDoorOpen)
+        {
+            Debug.Log("[Refrigerator] Closing door animation");
+            CloseDoorAnimation();
+        }
+    }
+
+
+
     private void CloseDoorAnimation()
     {
-        _doorTransform.DORotate(new Vector3(0, 0, 0), 0.5f).SetEase(Ease.OutBack);
+        _isDoorOpen = false;
+        _doorTransform.DOKill();
+        _doorTransform.DOLocalRotate(new Vector3(0, 0, 0), 0.5f).SetEase(Ease.OutBack);
     }
 
 
