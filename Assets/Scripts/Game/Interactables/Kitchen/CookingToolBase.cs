@@ -11,9 +11,9 @@ public abstract class CookingToolBase : InteractableBase
     [NotNull][SerializeField] protected Canvas _canvas;
     [NotNull][SerializeField] protected CookingProgressView _progressView;
 
-    protected IngredientObject _currentIngredientObject;
-    public IngredientData CurrentIngredientData => _currentIngredientObject != null ? _currentIngredientObject.Data : null;
-    public bool HasIngredient => _currentIngredientObject != null;
+    public IngredientObject CurrentIngredientObject { get; protected set; }
+    public IngredientData CurrentIngredientData => CurrentIngredientObject != null ? CurrentIngredientObject.Data : null;
+    public bool HasIngredient => CurrentIngredientObject != null;
 
     public bool IsCooking { get; protected set; }
     private SpawnFactory _factory;
@@ -43,7 +43,7 @@ public abstract class CookingToolBase : InteractableBase
             return;
         }
 
-        _currentIngredientObject = ingredientObject;
+        CurrentIngredientObject = ingredientObject;
         ingredientObject.SetData(ingredient);
         Debug.Log($"재료 배치: {ingredient.IngredientName}");
     }
@@ -56,8 +56,8 @@ public abstract class CookingToolBase : InteractableBase
             return;
         }
 
-        var ingredientData = _currentIngredientObject.Data;
-        _currentIngredientObject = null;
+        var ingredientData = CurrentIngredientObject.Data;
+        CurrentIngredientObject = null;
         StopCooking();
         Debug.Log($"재료 제거: {ingredientData.IngredientName}");
 
@@ -90,63 +90,53 @@ public abstract class CookingToolBase : InteractableBase
 
     public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
-        Debug.Log($"[CookingToolBase] InteractAsync 호출됨 - IsHolding: {character.IsHolding}, IsOccupied: {HasIngredient}");
 
-        // 뭔가를 들고 있을 때
-        if (character.IsHolding)
+        if (character.IsHolding && HasIngredient)
         {
-            // 1. 접시를 들고 있고 재료가 있으면 → 접시에 재료 올리기
-            if (character.CurrentCarriable is Plate plate && HasIngredient)
+            // 캐릭터(Plate) + 테이블(Ingredient) → 접시에 재료 올리기
+            if (character.CurrentCarriable.TryPlaceOnto(CurrentIngredientObject))
             {
-                character.PickUp(_currentIngredientObject);
-                await plate.Stack(_currentIngredientObject, character, ct);
-                character.PickUp(plate);
-                Debug.Log($"접시에 재료 올림: {_currentIngredientObject.Data.IngredientName}");
+                await character.PickUp(character.CurrentCarriable);
                 RemoveIngredient();
             }
-            // 2. 재료를 들고 있고 재료가 없으면 → 재료 올리기
-            else if (character.CurrentCarriable is IngredientObject ingredientObj && !HasIngredient)
+            // 캐릭터(Ingredient) + 테이블(Plate) → 접시에 재료 올리기
+            else if (CurrentIngredientObject.TryPlaceOnto(character.CurrentCarriable))
             {
-                if (CanPlaceIngredient(ingredientObj.Data))
-                {
-                    character.PutDown();
-                    ingredientObj.transform.SetParent(_ingredientSlot);
-                    ingredientObj.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-                    PlaceIngredient(ingredientObj.Data, ingredientObj);
-                    StartCooking();
-                    Debug.Log($"재료 올림: {ingredientObj.Data.IngredientName}");
-                }
-                else
-                {
-                    Debug.LogWarning("이 도구에 올릴 수 없는 재료입니다.");
-                }
-            }
-        }
-        // 빈손일 때
-        else
-        {
-            // 재료가 있으면 → 재료 집기
-            if (HasIngredient)
-            {
-                character.PickUp(_currentIngredientObject);
+                await character.PickUp(CurrentIngredientObject);
                 RemoveIngredient();
-                Debug.Log($"재료 집음: {_currentIngredientObject.Data.IngredientName}");
             }
         }
-
-        Debug.Log($"IsCooking: {IsCooking}, IsOccupied: {HasIngredient}");
+        else if (character.IsHolding && !HasIngredient)
+        {
+            if (CanPlaceIngredient(CurrentIngredientObject.Data))
+            {
+                await character.PutDown();
+                CurrentIngredientObject.transform.SetParent(_ingredientSlot);
+                CurrentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                PlaceIngredient(CurrentIngredientObject.Data, CurrentIngredientObject);
+                StartCooking();
+            }
+            else
+            {
+                Debug.LogWarning("이 도구에 올릴 수 없는 재료입니다.");
+            }
+        }
+        else if (!character.IsHolding && HasIngredient)
+        {
+            await character.PickUp(CurrentIngredientObject);
+            RemoveIngredient();
+        }
 
         await UniTask.CompletedTask;
     }
 
     protected async UniTask CompleteTransition(IngredientTransition transition)
     {
-        Destroy(_currentIngredientObject.gameObject);
-        _currentIngredientObject = await _factory.Create<IngredientObject>(PrefabKeys.GetPrefabPath(transition.Result.PrefabName));
-        _currentIngredientObject.SetData(transition.Result);
-        _currentIngredientObject.transform.SetParent(_ingredientSlot);
-        _currentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        _currentIngredientObject.transform.localScale = Vector3.one;
+        Destroy(CurrentIngredientObject.gameObject);
+        CurrentIngredientObject = await _factory.Create<IngredientObject>(PrefabKeys.GetPrefabPath(transition.Result.PrefabName));
+        CurrentIngredientObject.SetData(transition.Result);
+        CurrentIngredientObject.transform.SetParent(_ingredientSlot);
+        CurrentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
     }
 }

@@ -67,7 +67,7 @@ public class DiningTable : InteractableBase
             if (customer.Order.Recipe.IsComplete(ingredientDatas))
             {
                 // 주문과 일치! 서빙 처리
-                character.PutDown();
+                await character.PutDown();
                 PlacePlate(seat.GetSeatIndex(), plate);
 
                 // Order 완료 처리
@@ -98,7 +98,7 @@ public class DiningTable : InteractableBase
 
         if (plate == null) return;
 
-        character.PickUp(plate);
+        await character.PickUp(plate);
         _currentPlates[plateIndex] = null;
 
         await UniTask.CompletedTask;

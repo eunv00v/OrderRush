@@ -57,7 +57,7 @@ public class Stove : CookingToolBase
                 await UniTask.Yield(PlayerLoopTiming.Update, _cookingCts.Token);
             }
 
-            _currentIngredientObject.SetRuined();
+            CurrentIngredientObject.SetRuined();
             _progressView.SetVisible(false);
 
         }

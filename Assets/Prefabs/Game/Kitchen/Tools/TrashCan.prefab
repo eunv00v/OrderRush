@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 650766983153651196}
   - component: {fileID: 3378555511627446582}
   - component: {fileID: 2232103610887091445}
+  - component: {fileID: 3935999440259695645}
   m_Layer: 0
   m_Name: Bin_01
   m_TagString: Untagged
@@ -112,6 +113,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7438452, y: 0.6300495, z: 0.8415554}
   m_Center: {x: -0.00000014901164, y: 0.29090396, z: -0.031051658}
+--- !u!208 &3935999440259695645
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3883217948182206691}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.372, y: 0.31500003, z: 0.42100003}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0.291, z: -0.031000001}
+  m_TimeToStationary: 0.5
 --- !u!1 &7305446431892208088
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,13 +215,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8903161833394499600}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.106, y: 0.36, z: 0.5}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.106, y: 0.36, z: 0.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3623181609048613598}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &2546158941771725211
 MonoBehaviour:
   m_ObjectHideFlags: 0

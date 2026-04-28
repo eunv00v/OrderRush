@@ -1,3 +1,4 @@
+using A1.Meta;
 using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour
@@ -18,4 +19,6 @@ public class CharacterAnimator : MonoBehaviour
 
     public void TriggerPickUp() => _animator.SetTrigger(PickUpHash);
     public void TriggerPutDown() => _animator.SetTrigger(PutDownHash);
+    public float GetPickUpLength() => _animator.GetAnimationLength("CharacterAnim_PutDown");
+
 }

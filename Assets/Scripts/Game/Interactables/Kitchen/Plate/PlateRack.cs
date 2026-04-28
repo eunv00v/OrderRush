@@ -44,28 +44,27 @@ public class PlateRack : InteractableBase
         // 뭔가를 들고 있을 때
         if (character.IsHolding)
         {
-            // 재료를 들고 있으면 → 접시에 재료 담고 접시 들기
-            if (character.CurrentCarriable is IngredientObject ingredientObj)
-            {
-                character.PutDown();
-                await plate.Stack(ingredientObj, character, ct);
-                character.PickUp(plate);
-                _currentPlateIndex--;
-                UpdatePlateCount();
-                Debug.Log($"[PlateRack] Ingredient placed on new plate. Remaining plates: {_currentPlateIndex}");
-            }
-            // 재료가 아닌 것을 들고 있으면 → 무시
-            else
-            {
-                Destroy(plate.gameObject);
-                Debug.Log("[PlateRack] Character is holding something that cannot be placed on a plate");
-            }
+            // // 재료를 들고 있으면 → 접시에 재료 담고 접시 들기
+            // if (character.CurrentCarriable is IngredientObject ingredientObj)
+            // {
+            //     await plate.Stack(ingredientObj, character, ct);
+            //     await character.PickUp(plate);
+            //     _currentPlateIndex--;
+            //     UpdatePlateCount();
+            //     Debug.Log($"[PlateRack] Ingredient placed on new plate. Remaining plates: {_currentPlateIndex}");
+            // }
+            // // 재료가 아닌 것을 들고 있으면 → 무시
+            // else
+            // {
+            //     Destroy(plate.gameObject);
+            //     Debug.Log("[PlateRack] Character is holding something that cannot be placed on a plate");
+            // }
         }
         // 빈손일 때
         else
         {
             // 접시만 들기
-            character.PickUp(plate);
+            await character.PickUp(plate);
             _currentPlateIndex--;
             UpdatePlateCount();
             Debug.Log($"[PlateRack] Plate picked up. Remaining: {_currentPlateIndex}");

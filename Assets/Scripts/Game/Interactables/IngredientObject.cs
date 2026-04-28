@@ -35,4 +35,9 @@ public class IngredientObject : MonoBehaviour, ICarriable
         mpb.SetColor("_BaseColor", burnedColor);  // URP
         _renderer.SetPropertyBlock(mpb);
     }
+
+    public bool TryPlaceOnto(ICarriable other)
+    {
+        return false;
+    }
 }

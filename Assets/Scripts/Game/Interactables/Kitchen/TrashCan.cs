@@ -9,12 +9,12 @@ public class TrashCan : InteractableBase
     {
         if (!character.IsHolding) return;
 
-        if (character.PutDown() is MonoBehaviour item)
+        var carriable = await character.PutDown();
+        if (carriable != null)
         {
-            await UniTask.Delay(100, cancellationToken: ct);
-            Destroy(item.gameObject);
+            var component = carriable as Component;
+            Destroy(component.gameObject);
         }
 
-        await UniTask.CompletedTask;
     }
 }

@@ -21,52 +21,36 @@ public class KitchenTable : InteractableBase
 
     public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
-        if (character == null)
-        {
-            Debug.LogWarning("[KitchenTable] Character is null");
-            return;
-        }
+        if (character == null) return;
 
-        if (character.IsHolding)
-        {
-            var carriable = character.CurrentCarriable;
 
-            // 접시를 들고 있고 테이블에 재료가 있으면 → 접시에 재료 올리기
-            if (carriable is Plate plate && _carriable is IngredientObject)
+        if (character.IsHolding && _carriable != null)
+        {
+            // 캐릭터(Plate) + 테이블(Ingredient) → 접시에 재료 올리기
+            if (character.CurrentCarriable.TryPlaceOnto(_carriable))
             {
-                character.PickUp(_carriable);
-                await plate.Stack(_carriable, character, ct);
-                character.PickUp(plate);
+                await character.PickUp(character.CurrentCarriable);
                 _carriable = null;
-                Debug.Log("[KitchenTable] Ingredient added to plate");
             }
-            else if (_carriable is IStackable stackable && stackable.CanStack(carriable))
+            // 캐릭터(Ingredient) + 테이블(Plate) → 접시에 재료 올리기
+            else if (_carriable.TryPlaceOnto(character.CurrentCarriable))
             {
-                var item = character.PutDown();
-                await stackable.Stack(item, character, ct);
-            }
-            else if (_carriable == null && carriable is ICarriable)
-            {
-                var item = character.PutDown();
-                _carriable = item;
-                _carriable.OnPutDown(_slot);
-                Debug.Log($"[KitchenTable] {item.GetType().Name} placed on table");
-            }
-            else
-            {
-                Debug.Log("[KitchenTable] Table already has an item");
+                await character.PickUp(_carriable);
+                _carriable = null;
             }
         }
-        else
+        else if (character.IsHolding && _carriable == null)
         {
-            if (_carriable == null)
-            {
-                return;
-            }
-
-            character.PickUp(_carriable);  // OnPickedUp 자동 호출됨
+            var item = await character.PutDown();
+            _carriable = item;
+            _carriable.OnPutDown(_slot);
+        }
+        else if (character.IsHolding == false && _carriable != null)
+        {
+            await character.PickUp(_carriable);
             _carriable = null;
         }
+
 
         await UniTask.CompletedTask;
     }

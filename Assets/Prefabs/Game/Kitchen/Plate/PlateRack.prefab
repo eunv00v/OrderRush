@@ -115,13 +115,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1410114471298747618}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3630001, z: 0.5}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0.3630001, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5325903423532557500}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &8164489177166468145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 2345586525444100154}
   - component: {fileID: 534175517714752752}
   - component: {fileID: 6241368882607390583}
+  - component: {fileID: 8979791424633899924}
   m_Layer: 0
   m_Name: Counter_01_v07_S
   m_TagString: Untagged
@@ -249,6 +250,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.5391055, z: 0.9496529}
   m_Center: {x: 0, y: 0.26955274, z: -0.02517356}
+--- !u!208 &8979791424633899924
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047230992409068837}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.27, z: 0.47500002}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0.27, z: -0.025}
+  m_TimeToStationary: 0.5
 --- !u!1 &4124112082651440368
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,7 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlateRack
   _platesHighlight: {fileID: 3428748757410456992}
-  _interactPoint: {fileID: 5325903423532557500}
+  _interactPoint: {fileID: 5746450774001251669}
   _plates:
   - {fileID: 4775939569317471903}
   - {fileID: 3265756395943820890}

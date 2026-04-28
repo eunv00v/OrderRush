@@ -21,45 +21,7 @@ public class DishSink : InteractableBase
     {
         if (character == null) return;
 
-        // 뭔가를 들고 있을 때
-        if (character.IsHolding)
-        {
-            // 더러운 접시를 들고 있으면 → 설거지 시작
-            if (character.CurrentCarriable is Plate plate && plate.IsDirty)
-            {
-                character.PutDown();
-                _currentPlate = plate;
-                plate.transform.SetParent(_plateSlot);
-                plate.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
-                Debug.Log("[DishSink] Starting to wash plate");
-                await StartWashing(ct);
-            }
-            else
-            {
-                Debug.Log("[DishSink] Cannot wash - not a dirty plate");
-            }
-        }
-        // 빈손일 때
-        else
-        {
-            if (_currentPlate != null)
-            {
-                // 더러운 접시가 있으면 → 설거지 시작
-                if (_currentPlate.IsDirty)
-                {
-                    Debug.Log("[DishSink] Starting to wash plate");
-                    await StartWashing(ct);
-                }
-                // 깨끗한 접시가 있으면 → 접시 들기
-                else
-                {
-                    character.PickUp(_currentPlate);
-                    _currentPlate = null;
-                    Debug.Log("[DishSink] Clean plate picked up");
-                }
-            }
-        }
 
         await UniTask.CompletedTask;
     }

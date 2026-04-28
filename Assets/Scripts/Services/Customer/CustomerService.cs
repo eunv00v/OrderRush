@@ -59,7 +59,6 @@ public class CustomerService : ICustomerService, ITickable
         var customer = await _spawnFactory.Create<CustomerCharacter>(PrefabKeys.GetPrefabPath(PrefabKeys.CustomerCharacter1));
 
         customer.transform.SetParent(_levelContext.transform);
-        customer.transform.localScale = Vector3.one;
         customer.SetSpawnPosition(_levelContext.SpawnPoint.position);
         customer.WarpTo(_levelContext.SpawnPoint.position);
         customer.GoToSeat(availableSeat, randomRecipe);

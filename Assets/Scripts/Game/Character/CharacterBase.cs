@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public abstract class CharacterBase : MonoBehaviour
@@ -9,43 +12,70 @@ public abstract class CharacterBase : MonoBehaviour
 
     public bool IsHolding => CurrentCarriable != null;
     public ICarriable CurrentCarriable { get; protected set; }
+
     public Transform ItemSlot => _itemSlot;
     public bool IsExecuting => _actionExecutor.IsExecuting();
 
-    public virtual void PickUp(ICarriable item)
+    public virtual async UniTask PickUp(ICarriable item)
     {
-        if (item == null)
+        if (item is null) return;
+
+        try
         {
-            Debug.LogWarning($"[{gameObject.name}] Cannot pick up null item");
-            return;
-        }
+            float length = _animator.GetPickUpLength();
+            _animator.TriggerPickUp();
+            if (CurrentCarriable is null)
+            {
+                CurrentCarriable = item;
+                CurrentCarriable.OnPickedUp(ItemSlot);
+            }
 
-        if (CurrentCarriable != null)
+            await UniTask.Delay(TimeSpan.FromSeconds(length));
+        }
+        catch (OperationCanceledException ex)
         {
-            Debug.LogWarning($"[{gameObject.name}] Already holding an item: {CurrentCarriable}");
-            return;
+            Debug.Log($"PickUp canceled: {ex}");
         }
-
-        CurrentCarriable = item;
-        item.OnPickedUp(ItemSlot);
-        _animator.TriggerPickUp();
-
-        Debug.Log($"[{gameObject.name}] Picked up: {item}");
+        catch (System.Exception ex)
+        {
+            Debug.Log($" Error during PickUp: {ex}");
+        }
     }
 
-    public virtual ICarriable PutDown()
+
+    public virtual async UniTask<ICarriable> PutDown()
     {
-        if (CurrentCarriable == null)
+        if (CurrentCarriable == null) return null;
+
+        try
         {
-            Debug.LogWarning($"[{gameObject.name}] No item to put down");
-            return null;
+            var carriedItem = CurrentCarriable;
+            float length = _animator.GetPickUpLength();
+            _animator.TriggerPutDown();
+            carriedItem.OnPutDown(ItemSlot);
+            CurrentCarriable = null;
+            await UniTask.Delay(TimeSpan.FromSeconds(length));
+            return carriedItem;
+        }
+        catch (OperationCanceledException ex)
+        {
+            Debug.Log($"PutDown canceled: {ex}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($" Error during PutDown: {ex}");
         }
 
-        var item = CurrentCarriable;
-        CurrentCarriable = null;
-        _animator.TriggerPutDown();
-        Debug.Log($"[{gameObject.name}] Put down: {item}");
-        return item;
+        return null;
+    }
+
+    public void RemoveCarriedItem()
+    {
+        if (CurrentCarriable != null)
+        {
+            CurrentCarriable = null;
+        }
+
     }
 
     public void StartWorking()

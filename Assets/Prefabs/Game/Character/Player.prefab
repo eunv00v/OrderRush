@@ -36,7 +36,7 @@ Transform:
   - {fileID: 6162417688176407056}
   - {fileID: 2140100466881487722}
   m_Father: {fileID: 4108057531109008183}
-  m_LocalEulerAnglesHint: {x: 89.98942, y: -13.333008, z: -13.333008}
+  m_LocalEulerAnglesHint: {x: 87.88399, y: -172.26555, z: -172.26553}
 --- !u!1 &2128447918663542269
 GameObject:
   m_ObjectHideFlags: 0
@@ -67,7 +67,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1924666322610419158}
-  m_LocalEulerAnglesHint: {x: -0.000024829638, y: 89.99999, z: 93.32477}
+  m_LocalEulerAnglesHint: {x: -0.00052766316, y: 89.999664, z: 117.78717}
 --- !u!1 &2238218631444092954
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +391,7 @@ Transform:
   - {fileID: 3910171127139088440}
   - {fileID: 8195368750068990159}
   m_Father: {fileID: 4108057531109008183}
-  m_LocalEulerAnglesHint: {x: -89.98021, y: 4.615983e-13, z: 0}
+  m_LocalEulerAnglesHint: {x: -89.98021, y: 4.1762725e-13, z: 0}
 --- !u!1 &4791442483136340838
 GameObject:
   m_ObjectHideFlags: 0
@@ -859,7 +859,7 @@ Transform:
   - {fileID: 6488790435386127938}
   - {fileID: 2021056962753588555}
   m_Father: {fileID: 1924666322610419158}
-  m_LocalEulerAnglesHint: {x: 0.31047058, y: 0.0000042390247, z: 0.000004237123}
+  m_LocalEulerAnglesHint: {x: 6.974374, y: 0.0000042560305, z: 0.0000038130727}
 --- !u!1 &7530002913235524693
 GameObject:
   m_ObjectHideFlags: 0
@@ -987,7 +987,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1924666322610419158}
-  m_LocalEulerAnglesHint: {x: -0.000015396561, y: -90.00001, z: -93.324776}
+  m_LocalEulerAnglesHint: {x: -0.00080620835, y: -89.9992, z: -117.787155}
 --- !u!1 &8018935844622006817
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,7 +1015,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4108057531109008183}

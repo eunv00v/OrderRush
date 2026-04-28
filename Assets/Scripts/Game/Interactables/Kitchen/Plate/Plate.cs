@@ -5,15 +5,13 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-public class Plate : MonoBehaviour, ICarriable, IStackable
+public class Plate : MonoBehaviour, ICarriable
 {
     [NotNull][SerializeField] Transform _ingredientSlot;
-
     List<IngredientObject> _placedIngredients = new();
 
     [Inject] IOrderService _orderService;
 
-    public string DisplayName => "Plate";
     public List<IngredientObject> PlacedIngredients => _placedIngredients;
     public bool IsDirty { get; private set; }
 
@@ -21,45 +19,27 @@ public class Plate : MonoBehaviour, ICarriable, IStackable
     {
         transform.SetParent(slot);
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        transform.localScale = Vector3.one;
     }
 
     public void OnPutDown(Transform slot)
     {
         transform.SetParent(slot);
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        transform.localScale = Vector3.one;
     }
 
-    public bool CanStack(ICarriable item) => item is IngredientObject;
 
-    public async UniTask Stack(ICarriable item, CharacterBase character, CancellationToken ct)
+    public bool TryPlaceOnto(ICarriable other)
     {
-        if (item is IngredientObject ingredientObj)
-        {
-            ingredientObj.OnPutDown(_ingredientSlot);
-            _placedIngredients.Add(ingredientObj);
-            IsDirty = true;
-            Debug.Log($"[Plate] Ingredient stacked: {ingredientObj.Data.IngredientName}");
-            CheckRecipe();
-        }
+        var ingredientObj = other as IngredientObject;
+        if (ingredientObj == null) return false;
 
-        await UniTask.CompletedTask;
-    }
+        // 이미 같은 재료 있으면 거부
+        if (_placedIngredients.Any(i => i.Data == ingredientObj.Data)) return false;
 
-    public async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
-    {
-        if (character == null) return;
-        if (!character.IsHolding) return;
-
-        var carriable = character.CurrentCarriable;
-        if (CanStack(carriable))
-        {
-            character.PutDown();
-            await Stack(carriable, character, ct);
-        }
-
-        await UniTask.CompletedTask;
+        ingredientObj.OnPutDown(_ingredientSlot);
+        _placedIngredients.Add(ingredientObj);
+        IsDirty = true;
+        return true;
     }
 
     void CheckRecipe()

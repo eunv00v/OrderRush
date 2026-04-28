@@ -1,5 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using NUnit.Framework;
 using UnityEngine;
 
 public class InteractableBase : MonoBehaviour, IInteractable
@@ -18,4 +19,7 @@ public class InteractableBase : MonoBehaviour, IInteractable
     {
         _platesHighlight.SetHighlight(highlight);
     }
+
+
+
 }

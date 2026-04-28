@@ -37,23 +37,8 @@ public class InteractAction : IGameAction
             await _mover.MoveToAsync(navHit.position, ct);
             _animator.SetSpeed(0f);
 
-
-            // 타겟을 바라보도록 회전
-            Vector3 lookDirection;
-            if (_target.InteractPoint.parent != null)
-            {
-                lookDirection = _target.InteractPoint.parent.position - _character.transform.position;
-            }
-            else
-            {
-                lookDirection = _target.InteractPoint.position - _character.transform.position;
-            }
-
-            lookDirection.y = 0;
-            if (lookDirection.sqrMagnitude > 0.001f)
-            {
-                _character.transform.rotation = Quaternion.LookRotation(lookDirection);
-            }
+            // InteractPoint의 방향을 따라 회전
+            _character.transform.rotation = _target.InteractPoint.rotation;
 
             // 상호작용 실행
             await _target.InteractAsync(_character, ct);
