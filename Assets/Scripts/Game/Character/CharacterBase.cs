@@ -16,7 +16,7 @@ public abstract class CharacterBase : MonoBehaviour
     public Transform ItemSlot => _itemSlot;
     public bool IsExecuting => _actionExecutor.IsExecuting();
 
-    public virtual async UniTask PickUp(ICarriable item)
+    public async UniTask PickUp(ICarriable item)
     {
         if (item is null) return;
 
@@ -24,11 +24,8 @@ public abstract class CharacterBase : MonoBehaviour
         {
             float length = _animator.GetPickUpLength();
             _animator.TriggerPickUp();
-            if (CurrentCarriable is null)
-            {
-                CurrentCarriable = item;
-                CurrentCarriable.OnPickedUp(ItemSlot);
-            }
+            CurrentCarriable = item;
+            CurrentCarriable.AttachToSlot(ItemSlot);
 
             await UniTask.Delay(TimeSpan.FromSeconds(length));
         }
@@ -43,7 +40,7 @@ public abstract class CharacterBase : MonoBehaviour
     }
 
 
-    public virtual async UniTask<ICarriable> PutDown()
+    public async UniTask<ICarriable> PutDown()
     {
         if (CurrentCarriable == null) return null;
 
@@ -52,7 +49,7 @@ public abstract class CharacterBase : MonoBehaviour
             var carriedItem = CurrentCarriable;
             float length = _animator.GetPickUpLength();
             _animator.TriggerPutDown();
-            carriedItem.OnPutDown(ItemSlot);
+            carriedItem.AttachToSlot(ItemSlot);
             CurrentCarriable = null;
             await UniTask.Delay(TimeSpan.FromSeconds(length));
             return carriedItem;
@@ -69,13 +66,33 @@ public abstract class CharacterBase : MonoBehaviour
         return null;
     }
 
-    public void RemoveCarriedItem()
+
+
+
+    public async UniTask<ICarriable> PutDown(Transform attachSlot)
     {
-        if (CurrentCarriable != null)
+        if (CurrentCarriable == null) return null;
+
+        try
         {
+            var carriedItem = CurrentCarriable;
+            float length = _animator.GetPickUpLength();
+            _animator.TriggerPutDown();
+            CurrentCarriable.AttachToSlot(attachSlot);
             CurrentCarriable = null;
+            await UniTask.Delay(TimeSpan.FromSeconds(length));
+            return carriedItem;
+        }
+        catch (OperationCanceledException ex)
+        {
+            Debug.Log($"PutDown canceled: {ex}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($" Error during PutDown: {ex}");
         }
 
+        return null;
     }
 
     public void StartWorking()

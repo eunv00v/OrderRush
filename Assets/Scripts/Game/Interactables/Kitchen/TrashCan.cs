@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class TrashCan : InteractableBase
 {
-
+    [NotNull][SerializeField] Transform _slot;
     public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         if (!character.IsHolding) return;
 
-        var carriable = await character.PutDown();
+        var carriable = await character.PutDown(_slot);
         if (carriable != null)
         {
             var component = carriable as Component;

@@ -2,8 +2,15 @@ using UnityEngine;
 
 public interface ICarriable
 {
-    void OnPickedUp(Transform slot);
-    void OnPutDown(Transform slot);
+    void AttachToSlot(Transform slot);
 
-    bool TryPlaceOnto(ICarriable other);
+    CarriableType GetCarriableType();
+}
+
+
+public enum CarriableType
+{
+    None,
+    Ingredient,
+    Plate
 }

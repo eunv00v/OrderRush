@@ -27,8 +27,18 @@ public class Plate : MonoBehaviour, ICarriable
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
+    public void AttachToSlot(Transform slot)
+    {
+        transform.SetParent(slot);
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+    }
 
-    public bool TryPlaceOnto(ICarriable other)
+    public CarriableType GetCarriableType()
+    {
+        return CarriableType.Plate;
+    }
+
+    public bool TryPlaceOntoOther(ICarriable other)
     {
         var ingredientObj = other as IngredientObject;
         if (ingredientObj == null) return false;
@@ -41,6 +51,7 @@ public class Plate : MonoBehaviour, ICarriable
         IsDirty = true;
         return true;
     }
+
 
     void CheckRecipe()
     {
@@ -72,5 +83,10 @@ public class Plate : MonoBehaviour, ICarriable
     {
         IsDirty = false;
         Debug.Log("[Plate] Set to clean");
+    }
+
+    public bool CheckIngredient()
+    {
+        throw new System.NotImplementedException();
     }
 }

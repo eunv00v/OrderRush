@@ -8,14 +8,14 @@ public class KitchenTable : InteractableBase
     [NotNull][SerializeField] Transform _slot;
     [SerializeField] Plate _initialPlate;
 
-    ICarriable _carriable;
+    ICarriable _placedCarriable;
 
     void Awake()
     {
         if (_initialPlate != null)
         {
-            _carriable = _initialPlate;
-            _carriable.OnPutDown(_slot);
+            _placedCarriable = _initialPlate;
+            _placedCarriable.AttachToSlot(_slot);
         }
     }
 
@@ -24,31 +24,36 @@ public class KitchenTable : InteractableBase
         if (character == null) return;
 
 
-        if (character.IsHolding && _carriable != null)
+        if (character.IsHolding && _placedCarriable != null)
         {
-            // 캐릭터(Plate) + 테이블(Ingredient) → 접시에 재료 올리기
-            if (character.CurrentCarriable.TryPlaceOnto(_carriable))
+            if (character.CurrentCarriable.GetCarriableType() == CarriableType.Plate)
             {
-                await character.PickUp(character.CurrentCarriable);
-                _carriable = null;
+                var plate = character.CurrentCarriable as Plate;
+                if (plate.TryPlaceOntoOther(_placedCarriable))
+                {
+                    await character.PickUp(character.CurrentCarriable);
+                    _placedCarriable = null;
+                }
             }
-            // 캐릭터(Ingredient) + 테이블(Plate) → 접시에 재료 올리기
-            else if (_carriable.TryPlaceOnto(character.CurrentCarriable))
+            else if (_placedCarriable.GetCarriableType() == CarriableType.Plate)
             {
-                await character.PickUp(_carriable);
-                _carriable = null;
+                var plate = _placedCarriable as Plate;
+                if (plate.TryPlaceOntoOther(character.CurrentCarriable))
+                {
+                    await character.PickUp(_placedCarriable);
+                    _placedCarriable = null;
+                }
             }
+
         }
-        else if (character.IsHolding && _carriable == null)
+        else if (character.IsHolding && _placedCarriable == null)
         {
-            var item = await character.PutDown();
-            _carriable = item;
-            _carriable.OnPutDown(_slot);
+            _placedCarriable = await character.PutDown(_slot);
         }
-        else if (character.IsHolding == false && _carriable != null)
+        else if (character.IsHolding == false && _placedCarriable != null)
         {
-            await character.PickUp(_carriable);
-            _carriable = null;
+            await character.PickUp(_placedCarriable);
+            _placedCarriable = null;
         }
 
 

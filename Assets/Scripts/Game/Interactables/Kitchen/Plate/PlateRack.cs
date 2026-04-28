@@ -30,47 +30,46 @@ public class PlateRack : InteractableBase
     {
         if (character == null) return;
 
-        // 수량이 0이면 무시
         if (_currentPlateIndex <= 0)
         {
-            Debug.Log("[PlateRack] No plates available");
             return;
         }
 
-        // 접시 생성
-        var plate = await _factory.Create<Plate>(PrefabKeys.GetPrefabPath(PrefabKeys.Plate));
-        if (plate == null) return;
-
-        // 뭔가를 들고 있을 때
         if (character.IsHolding)
         {
-            // // 재료를 들고 있으면 → 접시에 재료 담고 접시 들기
-            // if (character.CurrentCarriable is IngredientObject ingredientObj)
-            // {
-            //     await plate.Stack(ingredientObj, character, ct);
-            //     await character.PickUp(plate);
-            //     _currentPlateIndex--;
-            //     UpdatePlateCount();
-            //     Debug.Log($"[PlateRack] Ingredient placed on new plate. Remaining plates: {_currentPlateIndex}");
-            // }
-            // // 재료가 아닌 것을 들고 있으면 → 무시
-            // else
-            // {
-            //     Destroy(plate.gameObject);
-            //     Debug.Log("[PlateRack] Character is holding something that cannot be placed on a plate");
-            // }
+            if (character.CurrentCarriable.GetCarriableType() == CarriableType.Ingredient)
+            {
+                var plate = await GetNewPlate();
+                if (plate.TryPlaceOntoOther(character.CurrentCarriable))
+                {
+                    await character.PickUp(plate);
+                    _currentPlateIndex--;
+                    UpdatePlateCount();
+                }
+                else
+                {
+                    Destroy(plate.gameObject);
+                }
+            }
         }
-        // 빈손일 때
         else
         {
-            // 접시만 들기
-            await character.PickUp(plate);
-            _currentPlateIndex--;
-            UpdatePlateCount();
-            Debug.Log($"[PlateRack] Plate picked up. Remaining: {_currentPlateIndex}");
+            var plate = await GetNewPlate();
+            if (plate != null)
+            {
+                await character.PickUp(plate);
+                _currentPlateIndex--;
+                UpdatePlateCount();
+            }
         }
 
         await UniTask.CompletedTask;
+    }
+
+    private async UniTask<Plate> GetNewPlate()
+    {
+        return await _factory.Create<Plate>(PrefabKeys.GetPrefabPath(PrefabKeys.Plate));
+
     }
 
     void UpdatePlateCount()

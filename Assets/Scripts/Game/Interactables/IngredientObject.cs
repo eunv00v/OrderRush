@@ -23,6 +23,16 @@ public class IngredientObject : MonoBehaviour, ICarriable
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
+    public void AttachToSlot(Transform slot)
+    {
+        transform.SetParent(slot);
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+    }
+
+    public CarriableType GetCarriableType()
+    {
+        return CarriableType.Ingredient;
+    }
     public void SetRuined()
     {
         IsRuined = true;
@@ -36,8 +46,5 @@ public class IngredientObject : MonoBehaviour, ICarriable
         _renderer.SetPropertyBlock(mpb);
     }
 
-    public bool TryPlaceOnto(ICarriable other)
-    {
-        return false;
-    }
+
 }

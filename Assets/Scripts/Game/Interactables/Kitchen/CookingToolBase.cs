@@ -32,7 +32,7 @@ public abstract class CookingToolBase : InteractableBase
 
     protected virtual void OnDestroy()
     {
-        StopCooking();
+        RemoveIngredient();
     }
 
     public virtual void PlaceIngredient(IngredientData ingredient, IngredientObject ingredientObject)
@@ -45,22 +45,15 @@ public abstract class CookingToolBase : InteractableBase
 
         CurrentIngredientObject = ingredientObject;
         ingredientObject.SetData(ingredient);
-        Debug.Log($"재료 배치: {ingredient.IngredientName}");
     }
 
     public virtual void RemoveIngredient()
     {
-        if (!HasIngredient)
+        if (HasIngredient)
         {
-            Debug.LogWarning("재료가 없습니다.");
-            return;
+            CurrentIngredientObject = null;
+            StopCooking();
         }
-
-        var ingredientData = CurrentIngredientObject.Data;
-        CurrentIngredientObject = null;
-        StopCooking();
-        Debug.Log($"재료 제거: {ingredientData.IngredientName}");
-
     }
 
 
@@ -93,26 +86,24 @@ public abstract class CookingToolBase : InteractableBase
 
         if (character.IsHolding && HasIngredient)
         {
-            // 캐릭터(Plate) + 테이블(Ingredient) → 접시에 재료 올리기
-            if (character.CurrentCarriable.TryPlaceOnto(CurrentIngredientObject))
+            if (character.CurrentCarriable.GetCarriableType() == CarriableType.Plate)
             {
-                await character.PickUp(character.CurrentCarriable);
-                RemoveIngredient();
+                var plate = character.CurrentCarriable as Plate;
+                if (plate.TryPlaceOntoOther(CurrentIngredientObject))
+                {
+                    await character.PickUp(character.CurrentCarriable);
+                    RemoveIngredient();
+                }
             }
-            // 캐릭터(Ingredient) + 테이블(Plate) → 접시에 재료 올리기
-            else if (CurrentIngredientObject.TryPlaceOnto(character.CurrentCarriable))
-            {
-                await character.PickUp(CurrentIngredientObject);
-                RemoveIngredient();
-            }
+
         }
         else if (character.IsHolding && !HasIngredient)
         {
-            if (CanPlaceIngredient(CurrentIngredientObject.Data))
+            var ingredientObj = character.CurrentCarriable as IngredientObject;
+            if (ingredientObj && CanPlaceIngredient(ingredientObj.Data))
             {
-                await character.PutDown();
-                CurrentIngredientObject.transform.SetParent(_ingredientSlot);
-                CurrentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                await character.PutDown(_ingredientSlot);
+                CurrentIngredientObject = ingredientObj;
                 PlaceIngredient(CurrentIngredientObject.Data, CurrentIngredientObject);
                 StartCooking();
             }
