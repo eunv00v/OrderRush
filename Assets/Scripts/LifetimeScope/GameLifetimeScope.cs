@@ -11,7 +11,6 @@ public class GameLifetimeScope : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         // Services
-        builder.Register<IOrderService, OrderService>(Lifetime.Singleton);
         builder.Register<ILevelProgressService, LevelProgressService>(Lifetime.Singleton);
         builder.Register<CustomerService>(Lifetime.Singleton).AsImplementedInterfaces();
 

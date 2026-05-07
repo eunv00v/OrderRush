@@ -9,15 +9,13 @@ public class CustomerService : ICustomerService, ITickable
     private LevelContext _levelContext;
     private List<RecipeData> _availableRecipes;
     private float _spawnInterval;
-    private readonly IOrderService _orderService;
     private readonly SpawnFactory _spawnFactory;
     private readonly ILevelProgressService _levelProgressService;
     private float _timer;
     private int _spawnCount;
 
-    public CustomerService(IOrderService orderService, SpawnFactory spawnFactory, ILevelProgressService levelProgressService)
+    public CustomerService(SpawnFactory spawnFactory, ILevelProgressService levelProgressService)
     {
-        _orderService = orderService;
         _spawnFactory = spawnFactory;
         _levelProgressService = levelProgressService;
     }

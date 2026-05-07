@@ -22,7 +22,7 @@ public abstract class BaseUIPresenter<TView> : IDisposable
         _canvasRectTransform = canvasRectTransform;
     }
 
-    public virtual void UpdatePosition()
+    private void UpdatePosition()
     {
         if (_isDisposed || View == null || _target == null)
         {
@@ -64,7 +64,7 @@ public abstract class BaseUIPresenter<TView> : IDisposable
     public virtual void Show()
     {
         if (_isDisposed || View == null) return;
-        View.Show();
+        UpdatePosition();
     }
 
     public virtual void Hide()

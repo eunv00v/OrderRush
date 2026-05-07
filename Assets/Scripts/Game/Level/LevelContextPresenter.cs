@@ -9,7 +9,6 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
 {
     private readonly IResourcesLoaderService _resourcesLoaderService;
     private readonly ILevelProgressService _levelsDataService;
-    private readonly IOrderService _orderService;
     private readonly LevelFactory _levelFactory;
     private readonly ISubscriber<PaymentEvent> _paymentSubscriber;
     private readonly CompositeDisposable _disposable = new();
@@ -23,13 +22,11 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
     public LevelContextPresenter(
         IResourcesLoaderService resourcesLoaderService,
         ILevelProgressService levelsDataService,
-        IOrderService orderService,
         LevelFactory levelFactory,
         ISubscriber<PaymentEvent> paymentSubscriber)
     {
         _resourcesLoaderService = resourcesLoaderService;
         _levelsDataService = levelsDataService;
-        _orderService = orderService;
         _levelFactory = levelFactory;
         _paymentSubscriber = paymentSubscriber;
 
@@ -67,6 +64,7 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
             return;
         }
         CurrentLevelContext = levelContext;
+
         // 3. Model 초기화
         LevelProgressModel.Initialize(CurrentLevelData.TargetMoney, CurrentLevelData.TimeLimit);
         _elapsedTime = 0f;

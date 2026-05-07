@@ -97,10 +97,9 @@ public class DiningTable : InteractableBase, IUpdatable
         // 게이지 생성 및 표시
         if (_tableGaugePresenter == null)
         {
-            _tableGaugePresenter = (TableGaugePresenter)_gaugeFactory.Create(transform, new Vector3(0, 1.5f, 0));
+            _tableGaugePresenter = _gaugeFactory.Create(transform, new Vector3(0, 1.5f, 0));
         }
         _tableGaugePresenter.Show();
-        _tableGaugePresenter.UpdatePosition();
 
         // Update 구독
         _updateService.RegisterUpdatable(this);

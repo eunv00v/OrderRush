@@ -6,24 +6,25 @@ using VContainer;
 
 public class CustomerCharacter : CharacterBase
 {
-    public Order Order { get; private set; }
+    public Order Order { get; set; }
     public DiningTable AssignedTable { get; private set; }
     public int AssignedSeatIndex { get; private set; }
 
-    public const float DEFAULT_TIME_LIMIT = 60f;
     private const float EAT_DURATION = 5f;
     public const float WAIT_TIME_LIMIT = 60f;
 
-    private IOrderService _orderService;
+    private ILevelContextPresenter _levelContext;
     private Vector3 _spawnPosition;
 
     private IPublisher<PaymentEvent> _paymentPublisher;
+    private OrderIconFactory _orderIconFactory;
 
     [Inject]
-    public void Construct(IPublisher<PaymentEvent> paymentPublisher, IOrderService orderService)
+    public void Construct(IPublisher<PaymentEvent> paymentPublisher, ILevelContextPresenter levelContext, OrderIconFactory orderIconFactory)
     {
         _paymentPublisher = paymentPublisher;
-        _orderService = orderService;
+        _levelContext = levelContext;
+        _orderIconFactory = orderIconFactory;
     }
 
     public void SetSpawnPosition(Vector3 position)
@@ -48,43 +49,6 @@ public class CustomerCharacter : CharacterBase
         EnqueueAction(new WaitForOrderAction());
     }
 
-    public async void EatAndLeave(Plate plate)
-    {
-        // Debug.Log($"[CustomerCharacter] Starting to eat...");
-
-        // // 5초 동안 음식 먹기
-        // await UniTask.Delay((int)(EAT_DURATION * 1000));
-
-        // Debug.Log($"[CustomerCharacter] Finished eating, leaving...");
-
-        // // 접시 비우기 (의자에서 일어나기 전)
-        // if (plate != null)
-        // {
-        //     plate.ClearIngredients();
-        //     Debug.Log($"[CustomerCharacter] Plate cleared");
-        // }
-
-        // if (Order != null && _paymentPublisher != null)
-        // {
-        //     var paymentEvent = new PaymentEvent(Order.Recipe.Price, Order.Recipe.RecipeName);
-        //     _paymentPublisher.Publish(paymentEvent);
-        //     Debug.Log($"[CustomerCharacter] Payment event published: ${Order.Recipe.Price} for {Order.Recipe.RecipeName}");
-        // }
-
-        // // 의자에서 일어나기 (NavMeshAgent 다시 활성화)
-        // EnableNavMeshAgent();
-        // AssignedTable.Clear();
-
-        // // 스폰 포지션으로 이동
-        // EnqueueAction(new MoveAction(_mover, _spawnPosition, _animator));
-
-        // // 이동 완료 후 사라지기 (ActionExecutor의 큐가 비워지면)
-        // await UniTask.WaitUntil(() => !IsExecuting);
-
-        // Debug.Log($"[CustomerCharacter] Destroying...");
-        // Destroy(gameObject);
-    }
-
     public void Leave()
     {
         Debug.Log($"[CustomerCharacter] Leaving table...");
@@ -103,21 +67,33 @@ public class CustomerCharacter : CharacterBase
     }
 
 
-    public void SetWaitGauge(float ratio)
-    {
-    }
-
     public bool TryTakeOrder()
     {
+        var currentActionType = _actionExecutor.CurrentAction != null ? _actionExecutor.CurrentAction.GetType().Name : "null";
+        Debug.Log($"[CustomerCharacter] Trying to take order... CurrentAction: {currentActionType}, Order: {Order}");
+
+        // 이미 주문했으면 무시
+        if (Order != null)
+        {
+            Debug.Log("[CustomerCharacter] Already ordered");
+            return false;
+        }
+
+        // 현재 Action이 WaitForOrderAction이면 취소
         if (_actionExecutor.CurrentAction is WaitForOrderAction)
         {
+            Debug.Log("[CustomerCharacter] Cancelling WaitForOrderAction");
             _actionExecutor.CancelCurrentAction();
-            Order = _orderService.AddOrder();
-            EnqueueAction(new WaitForFoodAction());
-            Debug.Log($"[CustomerCharacter] Order taken: {Order.Recipe.RecipeName}");
-            return true;
         }
-        return false;
+
+        EnqueueAction(new OrderAction(this, _levelContext));
+        EnqueueAction(new WaitForFoodAction(this, _orderIconFactory));
+        return true;
+    }
+
+    public void ServedFood()
+    {
+
     }
 
 }

@@ -74,7 +74,6 @@ public abstract class CookingToolBase : InteractableBase
     {
         if (_gaugePresenter != null)
         {
-            _gaugePresenter.UpdatePosition();
             _gaugePresenter.SetProgress(progress);
         }
     }

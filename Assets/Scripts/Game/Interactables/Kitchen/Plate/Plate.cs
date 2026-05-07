@@ -10,8 +10,6 @@ public class Plate : MonoBehaviour, ICarriable
     [NotNull][SerializeField] Transform _ingredientSlot;
     List<IngredientObject> _placedIngredients = new();
 
-    [Inject] IOrderService _orderService;
-
     public List<IngredientObject> PlacedIngredients => _placedIngredients;
     public bool IsDirty { get; private set; }
 
@@ -55,18 +53,18 @@ public class Plate : MonoBehaviour, ICarriable
 
     void CheckRecipe()
     {
-        var orders = _orderService.GetActiveOrders();
-        var ingredientDatas = _placedIngredients.Select(obj => obj.Data).ToList();
+        // var orders = _orderService.GetActiveOrders();
+        // var ingredientDatas = _placedIngredients.Select(obj => obj.Data).ToList();
 
-        foreach (var order in orders)
-        {
-            if (order.Recipe.IsComplete(ingredientDatas))
-            {
-                Debug.Log($"[Plate] Recipe matched: {order.Recipe.RecipeName}");
-                _orderService.CompleteOrder(order);
-                break;
-            }
-        }
+        // foreach (var order in orders)
+        // {
+        //     if (order.Recipe.IsComplete(ingredientDatas))
+        //     {
+        //         Debug.Log($"[Plate] Recipe matched: {order.Recipe.RecipeName}");
+        //         _orderService.CompleteOrder(order);
+        //         break;
+        //     }
+        // }
     }
 
     public void ClearIngredients()
