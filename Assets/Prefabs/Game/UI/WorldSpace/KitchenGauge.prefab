@@ -49,8 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7cd49accdbc4f7fbd9dbcb1b807a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GaugeView
-  _fillImage: {fileID: 369679278438517173}
-  _icon: {fileID: 5025706906240016056}
+  _fillImage: {fileID: 5025706906240016056}
 --- !u!1 &5132959465416452134
 GameObject:
   m_ObjectHideFlags: 0

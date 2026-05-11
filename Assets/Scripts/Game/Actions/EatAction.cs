@@ -18,18 +18,12 @@ public class EatAction : IGameAction
 
     public async UniTask ExecuteAsync(CancellationToken ct)
     {
-        Debug.Log($"[EatAction] {_customer.name} starts eating for {_eatDuration}s");
-
         await UniTask.Delay(TimeSpan.FromSeconds(_eatDuration), cancellationToken: ct);
-
-        Debug.Log($"[EatAction] {_customer.name} finished eating");
 
         if (_customer.Order?.Recipe != null)
         {
             int amount = _customer.Order.Recipe.Price;
             _paymentPublisher.Publish(new PaymentEvent(amount, _customer.Order.Recipe.RecipeName));
-
-            Debug.Log($"[EatAction] {_customer.name} paid {amount}");
         }
     }
 }

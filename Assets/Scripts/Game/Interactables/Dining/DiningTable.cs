@@ -18,11 +18,13 @@ public class DiningTable : InteractableBase, IUpdatable
     private IUpdateSubscriptionService _updateService;
 
     private int _seatedCount = 0;
-    private float _waitOrderTime = 60f;
+    private float _defaultWaitTime = 60f;
     private float _elapsedWaitTime = 0f;
 
     private bool _isWaitingForOrder = false;
     private bool _isWaitingFood = false;
+
+    private const float GAUGE_RECOVERY_TIME = 20f;
 
 
     [Inject]
@@ -64,7 +66,7 @@ public class DiningTable : InteractableBase, IUpdatable
         if (!_isWaitingForOrder)
         {
             _isWaitingForOrder = true;
-            StartWaitOrder();
+            StartWaitGauge();
         }
 
     }
@@ -75,7 +77,7 @@ public class DiningTable : InteractableBase, IUpdatable
         if (!_isWaitingForOrder) return;
 
         _elapsedWaitTime += Time.deltaTime;
-        float progress = _elapsedWaitTime / _waitOrderTime;
+        float progress = _elapsedWaitTime / _defaultWaitTime;
 
         // 게이지 업데이트
         if (_tableGaugePresenter != null)
@@ -84,13 +86,13 @@ public class DiningTable : InteractableBase, IUpdatable
         }
 
         // 시간 초과 시 처리
-        if (_elapsedWaitTime >= _waitOrderTime)
+        if (_elapsedWaitTime >= _defaultWaitTime)
         {
             OnWaitTimeout();
         }
     }
 
-    public void StartWaitOrder()
+    public void StartWaitGauge()
     {
         _elapsedWaitTime = 0f;
         _isWaitingForOrder = true;
@@ -107,7 +109,7 @@ public class DiningTable : InteractableBase, IUpdatable
         _updateService.RegisterUpdatable(this);
     }
 
-    public void StopWaitOrder()
+    public void StopWaitGauge()
     {
         _isWaitingForOrder = false;
         _isWaitingFood = false;
@@ -132,23 +134,14 @@ public class DiningTable : InteractableBase, IUpdatable
         }
 
         _elapsedWaitTime = Mathf.Max(0, _elapsedWaitTime - seconds);
-        float newProgress = _elapsedWaitTime / _waitOrderTime;
+        float newProgress = _elapsedWaitTime / _defaultWaitTime;
         _tableGaugePresenter?.SetProgress(newProgress);
 
-        Debug.Log($"[DiningTable] Gauge extended by {seconds}s. Remaining: {_waitOrderTime - _elapsedWaitTime}s");
+        Debug.Log($"[DiningTable] Gauge extended by {seconds}s. Remaining: {_defaultWaitTime - _elapsedWaitTime}s");
     }
 
     private void OnWaitTimeout()
     {
-        if (_isWaitingFood)
-        {
-            Debug.Log("[DiningTable] Food wait timeout! Customers leaving...");
-        }
-        else
-        {
-            Debug.Log("[DiningTable] Order wait timeout! Customers leaving...");
-        }
-
         // 모든 앉은 손님 이탈 처리
         foreach (var seat in _seats)
         {
@@ -160,7 +153,7 @@ public class DiningTable : InteractableBase, IUpdatable
             }
         }
 
-        StopWaitOrder();
+        StopWaitGauge();
     }
 
     public void PlacePlate(int seatIndex, Plate plate)
@@ -170,20 +163,56 @@ public class DiningTable : InteractableBase, IUpdatable
         plate.transform.position = _plateSlots[seatIndex].position;
     }
 
-    public DiningSeat GetAvailableSeat()
+    public void CustomerLeaving(int seatIndex)
     {
-        return _seats.FirstOrDefault(seat => !seat.HasCustomer);
+        var seat = _seats[seatIndex];
+        if (seat.HasCustomer)
+        {
+            seat.Clear();
+            _seatedCount--;
+
+            // 접시 재료만 제거 (접시는 남김)
+            if (_currentPlates[seatIndex] != null)
+            {
+                _currentPlates[seatIndex].ClearIngredients();
+            }
+        }
     }
+
 
     public bool IsEmptyTable()
     {
-        return _seatedCount == 0;
+        if (_seatedCount > 0) return false;
+
+        // 접시가 하나라도 남아있으면 빈 테이블이 아님
+        foreach (var plate in _currentPlates)
+        {
+            if (plate != null) return false;
+        }
+
+        return true;
     }
 
 
     public override async UniTask InteractAsync(CharacterBase character, CancellationToken ct)
     {
         Debug.Log($"[DiningTable] InteractAsync START - character: {character.name}, IsHolding: {character.IsHolding}, IsWaitingFood: {_isWaitingFood}");
+
+        if (_seatedCount == 0 && !character.IsHolding)
+        {
+            // 더러운 접시 찾기
+            for (int i = 0; i < _currentPlates.Count; i++)
+            {
+                var plate = _currentPlates[i];
+                if (plate != null && plate.IsDirty)
+                {
+                    await character.PickUp(plate);
+                    _currentPlates[i] = null;
+                    return;
+                }
+            }
+        }
+
 
         if (_isWaitingFood)
         {
@@ -259,10 +288,8 @@ public class DiningTable : InteractableBase, IUpdatable
                 PlacePlate(seat.GetSeatIndex(), plate);
 
                 customer.Order.Complete();
-                ExtendGaugeTime(20f);
-                customer.EnqueueEatAndLeave();
-
-                CheckAllServed();
+                ExtendGaugeTime(GAUGE_RECOVERY_TIME);
+                ProcessServingComplete();
 
                 Debug.Log($"[DiningTable] Food served to {customer.name}");
                 return;
@@ -272,7 +299,7 @@ public class DiningTable : InteractableBase, IUpdatable
         Debug.Log("[DiningTable] No matching order found for this food");
     }
 
-    private void CheckAllServed()
+    private bool CheckAllServed()
     {
         foreach (var seat in _seats)
         {
@@ -280,12 +307,27 @@ public class DiningTable : InteractableBase, IUpdatable
                 seat.CurrentCustomer.Order != null &&
                 !seat.CurrentCustomer.Order.IsCompleted)
             {
-                return;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void ProcessServingComplete()
+    {
+        if (!CheckAllServed()) return;
+
+        foreach (var seat in _seats)
+        {
+            if (!seat.HasCustomer) continue;
+
+            if (seat.CurrentCustomer != null)
+            {
+                seat.CurrentCustomer.EnqueueEatAndLeave();
             }
         }
 
-        StopWaitOrder();
-        Debug.Log("[DiningTable] All customers served");
+        StopWaitGauge();
     }
 
 }

@@ -12,13 +12,33 @@ public class CharacterAnimator : MonoBehaviour
     [SerializeField] Animator _animator;
 
     public void SetSpeed(float speed)
-        => _animator.SetFloat(SpeedHash, speed);
+    {
+        if (_animator == null) return;
+        _animator.SetFloat(SpeedHash, speed);
+    }
 
     public void SetWorking(bool isWorking)
-        => _animator.SetBool(IsWorkingHash, isWorking);
+    {
+        if (_animator == null) return;
+        _animator.SetBool(IsWorkingHash, isWorking);
+    }
 
-    public void TriggerPickUp() => _animator.SetTrigger(PickUpHash);
-    public void TriggerPutDown() => _animator.SetTrigger(PutDownHash);
-    public float GetPickUpLength() => _animator.GetAnimationLength("CharacterAnim_PutDown");
+    public void TriggerPickUp()
+    {
+        if (_animator == null) return;
+        _animator.SetTrigger(PickUpHash);
+    }
+
+    public void TriggerPutDown()
+    {
+        if (_animator == null) return;
+        _animator.SetTrigger(PutDownHash);
+    }
+
+    public float GetPickUpLength()
+    {
+        if (_animator == null) return 0f;
+        return _animator.GetAnimationLength("CharacterAnim_PutDown");
+    }
 
 }

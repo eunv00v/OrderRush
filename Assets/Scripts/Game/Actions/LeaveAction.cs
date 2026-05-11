@@ -23,6 +23,12 @@ public class LeaveAction : IGameAction
 
     public async UniTask ExecuteAsync(CancellationToken ct)
     {
+        // 테이블/좌석 정리
+        if (_customer.AssignedTable != null)
+        {
+            _customer.AssignedTable.CustomerLeaving(_customer.AssignedSeatIndex);
+        }
+
         _customer.EnableNavMeshAgent();
         await new MoveAction(_mover, _exitPosition, _animator).ExecuteAsync(ct);
         Object.Destroy(_customer.gameObject);

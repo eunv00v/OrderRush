@@ -13,6 +13,7 @@ public class CustomerService : ICustomerService, ITickable
     private readonly ILevelProgressService _levelProgressService;
     private float _timer;
     private int _spawnCount;
+    private int _maxGroupSize;
 
     public CustomerService(SpawnFactory spawnFactory, ILevelProgressService levelProgressService)
     {
@@ -26,6 +27,7 @@ public class CustomerService : ICustomerService, ITickable
         _availableRecipes = levelData.AvailableRecipes;
         _spawnInterval = levelData.CustomerSpawnInterval;
         _spawnCount = levelData.MaxCustomers;
+        _maxGroupSize = levelData.MaxGroupSize;
     }
 
     public async void Tick()
@@ -48,15 +50,18 @@ public class CustomerService : ICustomerService, ITickable
         var table = _levelContext.DiningTables.FirstOrDefault(t => t.IsEmptyTable());
         if (table == null) return 0;
 
-        int seatIndex = 0;
-        var customer = await _spawnFactory.Create<CustomerCharacter>(PrefabKeys.GetPrefabPath(PrefabKeys.CustomerCharacter1));
-        customer.transform.SetParent(_levelContext.transform);
-        customer.SetSpawnPosition(_levelContext.SpawnPoint.position);
-        customer.WarpTo(_levelContext.SpawnPoint.position);
-        customer.EnqueueGoToSeat(table, seatIndex);
-        seatIndex++;
+        int groupSize = Random.Range(1, _maxGroupSize + 1);
 
-        return seatIndex;
+        for (int i = 0; i < groupSize; i++)
+        {
+            var customer = await _spawnFactory.Create<CustomerCharacter>(PrefabKeys.GetPrefabPath(PrefabKeys.CustomerCharacter1));
+            customer.transform.SetParent(_levelContext.transform);
+            customer.SetSpawnPosition(_levelContext.SpawnPoint.position);
+            customer.WarpTo(_levelContext.SpawnPoint.position);
+            customer.EnqueueGoToSeat(table, i);
+        }
+
+        return groupSize;
     }
 
 

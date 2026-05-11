@@ -14,7 +14,7 @@ public class LevelData : ScriptableObject
     [Header("Customer Settings")]
     [SerializeField] private float _customerSpawnInterval = 5f;  // 손님 스폰 간격 (초)
     [SerializeField] private int _maxCustomers = 3;  // 최대  손님 수
-    [SerializeField] private int _groupCustomers = 1;
+    [SerializeField] private int _maxGroupSize = 1;
 
     [Header("Goal")]
     [SerializeField] private int _targetMoney;  // 목표 금액
@@ -26,6 +26,7 @@ public class LevelData : ScriptableObject
     public List<RecipeData> AvailableRecipes => _availableRecipes;
     public float CustomerSpawnInterval => _customerSpawnInterval;
     public int MaxCustomers => _maxCustomers;
+    public int MaxGroupSize => _maxGroupSize;
     public int TargetMoney => _targetMoney;
     public float TimeLimit => _timeLimit;
 }

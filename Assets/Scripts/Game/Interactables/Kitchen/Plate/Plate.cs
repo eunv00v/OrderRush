@@ -13,18 +13,6 @@ public class Plate : MonoBehaviour, ICarriable
     public List<IngredientObject> PlacedIngredients => _placedIngredients;
     public bool IsDirty { get; private set; }
 
-    public void OnPickedUp(Transform slot)
-    {
-        transform.SetParent(slot);
-        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-    }
-
-    public void OnPutDown(Transform slot)
-    {
-        transform.SetParent(slot);
-        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-    }
-
     public void AttachToSlot(Transform slot)
     {
         transform.SetParent(slot);
@@ -51,21 +39,6 @@ public class Plate : MonoBehaviour, ICarriable
     }
 
 
-    void CheckRecipe()
-    {
-        // var orders = _orderService.GetActiveOrders();
-        // var ingredientDatas = _placedIngredients.Select(obj => obj.Data).ToList();
-
-        // foreach (var order in orders)
-        // {
-        //     if (order.Recipe.IsComplete(ingredientDatas))
-        //     {
-        //         Debug.Log($"[Plate] Recipe matched: {order.Recipe.RecipeName}");
-        //         _orderService.CompleteOrder(order);
-        //         break;
-        //     }
-        // }
-    }
 
     public void ClearIngredients()
     {
@@ -74,17 +47,11 @@ public class Plate : MonoBehaviour, ICarriable
             Destroy(ingredient.gameObject);
         }
         _placedIngredients.Clear();
-        Debug.Log("[Plate] All ingredients cleared");
     }
 
     public void SetClean()
     {
         IsDirty = false;
-        Debug.Log("[Plate] Set to clean");
     }
 
-    public bool CheckIngredient()
-    {
-        throw new System.NotImplementedException();
-    }
 }

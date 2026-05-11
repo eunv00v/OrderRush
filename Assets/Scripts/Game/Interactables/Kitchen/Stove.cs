@@ -45,7 +45,7 @@ public class Stove : CookingToolBase
 
             // 조리 완료
             Debug.Log($"[Stove] 조리 완료: {transition.Result.IngredientName}");
-            UpdateProgress(1f);
+            UpdateProgress(0f);
             await CompleteTransition(transition);
 
             _cookingElapsedTime = 0f;
