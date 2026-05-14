@@ -18,7 +18,7 @@ public class LevelData : ScriptableObject
 
     [Header("Goal")]
     [SerializeField] private int _targetMoney;  // 목표 금액
-    [SerializeField] private float _timeLimit = 180f;  // 제한 시간 (초), 0이면 무제한
+    [SerializeField] private int _timeLimit = 300;  // 제한 시간 (초), 0이면 무제한
 
     // Properties
     public int LevelNumber => _levelNumber;
@@ -28,5 +28,5 @@ public class LevelData : ScriptableObject
     public int MaxCustomers => _maxCustomers;
     public int MaxGroupSize => _maxGroupSize;
     public int TargetMoney => _targetMoney;
-    public float TimeLimit => _timeLimit;
+    public int TimeLimit => _timeLimit;
 }
