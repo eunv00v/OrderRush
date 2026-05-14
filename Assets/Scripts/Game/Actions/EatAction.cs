@@ -8,7 +8,6 @@ public class EatAction : IGameAction
 {
     private readonly CustomerCharacter _customer;
     private readonly IPublisher<PaymentEvent> _paymentPublisher;
-    private readonly float _eatDuration = 3.0f;
 
     public EatAction(CustomerCharacter customer, IPublisher<PaymentEvent> paymentPublisher)
     {
@@ -18,7 +17,7 @@ public class EatAction : IGameAction
 
     public async UniTask ExecuteAsync(CancellationToken ct)
     {
-        await UniTask.Delay(TimeSpan.FromSeconds(_eatDuration), cancellationToken: ct);
+        await UniTask.Delay(TimeSpan.FromSeconds(Constants.kCustomerEatSeconds), cancellationToken: ct);
 
         if (_customer.Order?.Recipe != null)
         {

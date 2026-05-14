@@ -8,7 +8,6 @@ public class WaitInLineAction : IGameAction
     private readonly Transform _characterTransform;
     private readonly Quaternion _targetRotation;
     private readonly NavMeshMover _mover;
-    private const float ROTATION_DURATION = 0.3f;
 
     public WaitInLineAction(CharacterAnimator animator, Transform characterTransform, Quaternion targetRotation, NavMeshMover mover)
     {
@@ -26,11 +25,11 @@ public class WaitInLineAction : IGameAction
         Quaternion startRotation = _characterTransform.rotation;
         float elapsedTime = 0f;
 
-        while (elapsedTime < ROTATION_DURATION)
+        while (elapsedTime < Constants.kRotationSeconds)
         {
             ct.ThrowIfCancellationRequested();
             elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / ROTATION_DURATION);
+            float t = Mathf.Clamp01(elapsedTime / Constants.kRotationSeconds);
             _characterTransform.rotation = Quaternion.Slerp(startRotation, _targetRotation, t);
             await UniTask.Yield();
         }

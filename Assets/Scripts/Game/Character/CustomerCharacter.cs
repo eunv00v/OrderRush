@@ -10,9 +10,6 @@ public class CustomerCharacter : CharacterBase
     public DiningTable AssignedTable { get; private set; }
     public int AssignedSeatIndex { get; private set; }
 
-    private const float EAT_DURATION = 5f;
-    public const float WAIT_TIME_LIMIT = 60f;
-
     private ILevelContextPresenter _levelContext;
     private Vector3 _spawnPosition;
 

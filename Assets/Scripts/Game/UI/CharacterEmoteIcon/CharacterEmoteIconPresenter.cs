@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class CharacterEmoteIconPresenter : BaseUIPresenter<CharacterEmoteIconView>
 {
-    private const float DISPLAY_DURATION = 1.5f;
 
     public CharacterEmoteIconPresenter(Camera mainCamera, RectTransform canvasRectTransform, CharacterEmoteIconView view, Transform target, Vector3 offset)
         : base(mainCamera, canvasRectTransform, view, target, offset)
@@ -36,6 +35,6 @@ public class CharacterEmoteIconPresenter : BaseUIPresenter<CharacterEmoteIconVie
         ct.Register(() => tween2.Kill());
         await tween2.AsyncWaitForCompletion();
 
-        await UniTask.Delay(TimeSpan.FromSeconds(DISPLAY_DURATION), cancellationToken: ct);
+        await UniTask.Delay(TimeSpan.FromSeconds(Constants.kEmoteIconSeconds), cancellationToken: ct);
     }
 }

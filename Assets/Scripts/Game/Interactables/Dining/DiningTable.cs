@@ -20,13 +20,11 @@ public class DiningTable : InteractableBase, IUpdatable
     private IPublisher<TableAvailableEvent> _tableAvailablePublisher;
 
     private int _seatedCount = 0;
-    private float _defaultWaitTime = 10f;
     private float _elapsedWaitTime = 0f;
 
     private bool _isWaitingForOrder = false;
     private bool _isWaitingFood = false;
 
-    private const float GAUGE_RECOVERY_TIME = 20f;
 
     public int MaxSeats => _seats.Length;
 
@@ -84,7 +82,7 @@ public class DiningTable : InteractableBase, IUpdatable
         if (!_isWaitingForOrder) return;
 
         _elapsedWaitTime += Time.deltaTime;
-        float progress = _elapsedWaitTime / _defaultWaitTime;
+        float progress = _elapsedWaitTime / Constants.kDefaultWaitSeconds;
 
         // 게이지 업데이트
         if (_tableGaugePresenter != null)
@@ -93,7 +91,7 @@ public class DiningTable : InteractableBase, IUpdatable
         }
 
         // 시간 초과 시 처리
-        if (_elapsedWaitTime >= _defaultWaitTime)
+        if (_elapsedWaitTime >= Constants.kDefaultWaitSeconds)
         {
             OnWaitTimeout();
         }
@@ -132,7 +130,7 @@ public class DiningTable : InteractableBase, IUpdatable
         _updateService.UnregisterUpdatable(this);
     }
 
-    private void ExtendGaugeTime(float seconds)
+    private void ExtendGaugeTime()
     {
         if (!_isWaitingFood)
         {
@@ -140,11 +138,9 @@ public class DiningTable : InteractableBase, IUpdatable
             return;
         }
 
-        _elapsedWaitTime = Mathf.Max(0, _elapsedWaitTime - seconds);
-        float newProgress = _elapsedWaitTime / _defaultWaitTime;
+        _elapsedWaitTime = Mathf.Max(0, _elapsedWaitTime - Constants.kGaugeExtendSeconds);
+        float newProgress = _elapsedWaitTime / Constants.kDefaultWaitSeconds;
         _tableGaugePresenter?.SetProgress(newProgress);
-
-        Debug.Log($"[DiningTable] Gauge extended by {seconds}s. Remaining: {_defaultWaitTime - _elapsedWaitTime}s");
     }
 
     private void OnWaitTimeout()
@@ -301,7 +297,7 @@ public class DiningTable : InteractableBase, IUpdatable
                 PlacePlate(seat.GetSeatIndex(), plate);
 
                 customer.Order.Complete();
-                ExtendGaugeTime(GAUGE_RECOVERY_TIME);
+                ExtendGaugeTime();
                 ProcessServingComplete();
 
                 Debug.Log($"[DiningTable] Food served to {customer.name}");

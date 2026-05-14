@@ -10,7 +10,6 @@ public class DishSink : InteractableBase
     [NotNull][SerializeField] CookingProgressView _progressView;
 
     private Plate _currentPlate;
-    private const float WASH_DURATION = 3f;
 
     void Awake()
     {
@@ -35,7 +34,7 @@ public class DishSink : InteractableBase
 
         try
         {
-            while (elapsedTime < WASH_DURATION)
+            while (elapsedTime < Constants.kToolProcessSeconds)
             {
                 // 취소 요청 확인
                 if (ct.IsCancellationRequested)
@@ -48,7 +47,7 @@ public class DishSink : InteractableBase
                 await UniTask.Yield();
                 elapsedTime += Time.deltaTime;
 
-                float progress = elapsedTime / WASH_DURATION;
+                float progress = elapsedTime / Constants.kToolProcessSeconds;
                 _progressView.SetProgress(progress);
             }
 

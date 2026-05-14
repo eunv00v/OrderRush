@@ -7,7 +7,6 @@ public class OrderAction : IGameAction
     private readonly CustomerCharacter _character;
     private readonly ILevelContextPresenter _levelContext;
 
-    public const float DEFAULT_TIME_LIMIT = 60f;
     public OrderAction(CustomerCharacter character, ILevelContextPresenter levelContextPresenter)
     {
         _character = character;
@@ -23,10 +22,7 @@ public class OrderAction : IGameAction
         }
 
         var recipe = recipes[Random.Range(0, recipes.Count)];
-        _character.Order = new Order(recipe, DEFAULT_TIME_LIMIT);
-        Debug.Log($"[CustomerCharacter] Order created: {recipe.RecipeName}");
-
-
+        _character.Order = new Order(recipe, Constants.kDefaultWaitSeconds);
         await UniTask.CompletedTask;
     }
 }

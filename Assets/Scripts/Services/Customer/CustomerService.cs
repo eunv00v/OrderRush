@@ -20,7 +20,7 @@ public class CustomerService : ICustomerService, ITickable
     private readonly ISubscriber<TableAvailableEvent> _tableAvailableSubscriber;
     private IDisposable _subscription;
 
-    private const float SPACING = 1.5f;
+
 
     public CustomerService(
         SpawnFactory spawnFactory,
@@ -162,7 +162,7 @@ public class CustomerService : ICustomerService, ITickable
         }
         totalPeopleAhead += memberIndex;
 
-        float offset = totalPeopleAhead * SPACING;
+        float offset = totalPeopleAhead * Constants.kWaitingLineSpacing;
         return basePosition + forward * offset;
     }
 
