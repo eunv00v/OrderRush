@@ -27,6 +27,10 @@ public class GameLifetimeScope : LifetimeScope
         builder.RegisterEntryPoint<GameInitiator>();
         builder.RegisterEntryPoint<PlayerInputHandler>();
 
+        // HUD
+        builder.RegisterComponentInHierarchy<HudView>();
+        builder.RegisterEntryPoint<HudPresenter>();
+
         // Level
         builder.Register<LevelFactory>(Lifetime.Scoped).WithParameter(_root);
         builder.Register<LevelContextPresenter>(Lifetime.Scoped)

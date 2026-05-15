@@ -7,7 +7,6 @@ using VContainer.Unity;
 
 public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposable
 {
-    private readonly IResourcesLoaderService _resourcesLoaderService;
     private readonly ILevelProgressService _levelsDataService;
     private readonly LevelFactory _levelFactory;
     private readonly ISubscriber<PaymentEvent> _paymentSubscriber;
@@ -19,13 +18,10 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
 
     private float _elapsedTime;
 
-    public LevelContextPresenter(
-        IResourcesLoaderService resourcesLoaderService,
-        ILevelProgressService levelsDataService,
+    public LevelContextPresenter(ILevelProgressService levelsDataService,
         LevelFactory levelFactory,
         ISubscriber<PaymentEvent> paymentSubscriber)
     {
-        _resourcesLoaderService = resourcesLoaderService;
         _levelsDataService = levelsDataService;
         _levelFactory = levelFactory;
         _paymentSubscriber = paymentSubscriber;
@@ -41,7 +37,6 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
     private void OnPaymentReceived(PaymentEvent evt)
     {
         LevelProgressModel.AddMoney(evt.Amount);
-        Debug.Log($"[LevelContextPresenter] Payment received: +{evt.Amount} for {evt.RecipeName} (Total: {LevelProgressModel.CurrentMoney.Value}/{LevelProgressModel.TargetMoney})");
 
         CheckLevelCompleted();
     }
@@ -100,7 +95,7 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
             _levelsDataService.SetMaxReachedLevel(CurrentLevelData.LevelNumber + 1);
 
             Debug.Log($"[LevelContextPresenter] ===== LEVEL {CurrentLevelData.LevelNumber} COMPLETED! =====");
-            Debug.Log($"[LevelContextPresenter] Final Money: {LevelProgressModel.CurrentMoney.Value}/{LevelProgressModel.TargetMoney}");
+            Debug.Log($"[LevelContextPresenter] Final Money: {LevelProgressModel.EarnedMoney.Value}/{LevelProgressModel.TargetMoney}");
         }
     }
 
@@ -111,7 +106,7 @@ public class LevelContextPresenter : ILevelContextPresenter, ITickable, IDisposa
             LevelProgressModel.SetLevelInactive();
 
             Debug.Log($"[LevelContextPresenter] ===== LEVEL {CurrentLevelData.LevelNumber} FAILED! =====");
-            Debug.Log($"[LevelContextPresenter] Final Money: {LevelProgressModel.CurrentMoney.Value}/{LevelProgressModel.TargetMoney}");
+            Debug.Log($"[LevelContextPresenter] Final Money: {LevelProgressModel.EarnedMoney.Value}/{LevelProgressModel.TargetMoney}");
             Debug.Log($"[LevelContextPresenter] Time expired!");
         }
     }
