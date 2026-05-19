@@ -14,6 +14,8 @@ public class ProjectLifetimeScope : LifetimeScope
                .As<IUpdateSubscriptionService>();
         builder.Register<ResourcesLoaderService>(Lifetime.Singleton)
                .As<IResourcesLoaderService>();
+        builder.Register<UserDataService>(Lifetime.Singleton)
+               .As<IUserDataService>();
         builder.RegisterEntryPoint<AppBootstrap>();
     }
 

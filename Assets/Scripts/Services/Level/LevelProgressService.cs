@@ -4,14 +4,17 @@ using UnityEngine;
 public class LevelProgressService : ILevelProgressService
 {
     private readonly IResourcesLoaderService _resourceLoader;
+    private readonly IUserDataService _userDataService;
     private LevelsData _levelsData;
     private int _maxReachedLevel = 1;
     private int _selectedLevel = 1;
-    private const string PREF_MAX_LEVEL = "MaxReachedLevel";
 
-    public LevelProgressService(IResourcesLoaderService resourceLoader)
+    public LevelProgressService(
+        IResourcesLoaderService resourceLoader,
+        IUserDataService userDataService)
     {
         _resourceLoader = resourceLoader;
+        _userDataService = userDataService;
     }
 
     public async UniTask LoadLevelsData()
@@ -38,9 +41,7 @@ public class LevelProgressService : ILevelProgressService
         if (levelNumber > _maxReachedLevel)
         {
             _maxReachedLevel = levelNumber;
-            PlayerPrefs.SetInt(PREF_MAX_LEVEL, _maxReachedLevel);
-            PlayerPrefs.Save();
-            Debug.Log($"Max reached level updated: {_maxReachedLevel}");
+            _userDataService.SaveInt(UserDataKeys.MaxReachedLevel, _maxReachedLevel);
         }
     }
 
@@ -51,7 +52,7 @@ public class LevelProgressService : ILevelProgressService
 
     private void LoadMaxReachedLevel()
     {
-        _maxReachedLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 1);
+        _maxReachedLevel = _userDataService.LoadInt(UserDataKeys.MaxReachedLevel, 1);
     }
 
     void ILevelProgressService.LoadMaxReachedLevel()
