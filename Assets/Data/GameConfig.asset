@@ -15,6 +15,8 @@ MonoBehaviour:
   _enterWaitDuration: 30
   _orderWaitDuration: 20
   _foodWaitDuration: 60
-  _patienceRecoveryAmount: 0.1
+  _patienceRecoveryAmount: 0.3
   _refreshCosts: 320000006400000096000000
   _tipRatio: 0.1
+  _eatDuration: 5
+  _toolProcessSeconds: 5

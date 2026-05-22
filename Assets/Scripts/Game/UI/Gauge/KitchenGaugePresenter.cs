@@ -14,9 +14,9 @@ public class KitchenGaugePresenter : BaseUIPresenter<GaugeView>
         View.SetProgress(progress);
     }
 
-    public virtual void SetColor(Color color)
+    public virtual void SetWarning(bool isShow)
     {
         if (_isDisposed || View == null) return;
-        View.SetColor(color);
+        View.SetWarning(isShow);
     }
 }

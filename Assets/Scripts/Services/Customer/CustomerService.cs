@@ -13,6 +13,7 @@ public class CustomerService : ICustomerService
     private float _spawnInterval;
     private readonly SpawnFactory _spawnFactory;
     private readonly IDayProgressService _dayProgressService;
+    private readonly ISubscriber<TableAvailableEvent> _tableAvailableSubscriber;
     private int _nextSpawnIndex;
     private int _maxCustomers;
     private int _maxGroupSize;
@@ -26,11 +27,13 @@ public class CustomerService : ICustomerService
     public CustomerService(
         ILevelContextPresenter levelPresenter,
         SpawnFactory spawnFactory,
-        IDayProgressService dayProgressService)
+        IDayProgressService dayProgressService,
+        ISubscriber<TableAvailableEvent> tableAvailableSubscriber)
     {
         _levelPresenter = levelPresenter;
         _spawnFactory = spawnFactory;
         _dayProgressService = dayProgressService;
+        _tableAvailableSubscriber = tableAvailableSubscriber;
     }
 
     public void Initialize()
@@ -49,6 +52,10 @@ public class CustomerService : ICustomerService
 
         currentDay.TimeBarElapsed
             .Subscribe(CheckAndSpawn)
+            .AddTo(_disposables);
+
+        _tableAvailableSubscriber
+            .Subscribe(OnTableAvailable)
             .AddTo(_disposables);
     }
 
@@ -170,6 +177,44 @@ public class CustomerService : ICustomerService
 
         float offset = totalPeopleAhead * Constants.kWaitingLineSpacing;
         return basePosition + forward * offset;
+    }
+
+    private void OnTableAvailable(TableAvailableEvent evt)
+    {
+        if (_waitingList.Count == 0) return;
+
+        var firstGroup = _waitingList[0];
+        var table = evt.Table;
+
+        if (!table.IsEmptyTable() || table.MaxSeats < firstGroup.GroupSize)
+        {
+            return;
+        }
+
+        Debug.Log($"[CustomerService] Seating waiting group ({firstGroup.GroupSize} customers) at available table");
+
+        for (int i = 0; i < firstGroup.Members.Count; i++)
+        {
+            var customer = firstGroup.Members[i];
+            customer.EnqueueGoToSeat(table, i);
+        }
+
+        _waitingList.RemoveAt(0);
+        ReorganizeWaitingLine();
+    }
+
+    private void ReorganizeWaitingLine()
+    {
+        for (int groupIndex = 0; groupIndex < _waitingList.Count; groupIndex++)
+        {
+            var group = _waitingList[groupIndex];
+            for (int memberIndex = 0; memberIndex < group.Members.Count; memberIndex++)
+            {
+                var customer = group.Members[memberIndex];
+                Vector3 newPosition = CalculateWaitingPosition(groupIndex, memberIndex);
+                customer.EnqueueGoToWaitingPosition(newPosition, _levelPresenter.WaitingRotation);
+            }
+        }
     }
 
 }

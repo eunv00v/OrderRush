@@ -42,6 +42,7 @@ public abstract class CookingToolBase : InteractableBase
             return;
         }
 
+        Debug.Log($"[CookingToolBase] PlaceIngredient - Ingredient: {(ingredient != null ? ingredient.IngredientName : "null")}, IngredientObject: {ingredientObject}");
         CurrentIngredientObject = ingredientObject;
         ingredientObject.SetData(ingredient);
     }
@@ -50,8 +51,9 @@ public abstract class CookingToolBase : InteractableBase
     {
         if (HasIngredient)
         {
-            CurrentIngredientObject = null;
+            Debug.Log($"[CookingToolBase] RemoveIngredient - Removing: {CurrentIngredientObject} (Data: {CurrentIngredientData})");
             StopCooking();
+            CurrentIngredientObject = null;
         }
     }
 
@@ -87,7 +89,6 @@ public abstract class CookingToolBase : InteractableBase
         {
             _gaugePresenter = _gaugeFactory.Create(transform, new Vector3(0, 0.5f, 0));
             _gaugePresenter.Show();
-            _gaugePresenter.SetColor(Color.green);
             _gaugePresenter.SetProgress(0f);
         }
         else
@@ -140,6 +141,7 @@ public abstract class CookingToolBase : InteractableBase
         }
         else if (!character.IsHolding && HasIngredient)
         {
+            StopCooking();
             await character.PickUp(CurrentIngredientObject);
             RemoveIngredient();
         }
@@ -149,11 +151,13 @@ public abstract class CookingToolBase : InteractableBase
 
     protected async UniTask CompleteTransition(IngredientTransition transition)
     {
+        Debug.Log($"[CookingToolBase] CompleteTransition - Before: {CurrentIngredientObject}, Transition to: {transition.Result.IngredientName}");
         Destroy(CurrentIngredientObject.gameObject);
         CurrentIngredientObject = await _factory.Create<IngredientObject>(PrefabKeys.GetPrefabPath(transition.Result.PrefabName));
         CurrentIngredientObject.SetData(transition.Result);
         CurrentIngredientObject.transform.SetParent(_ingredientSlot);
         CurrentIngredientObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        Debug.Log($"[CookingToolBase] CompleteTransition - After: {CurrentIngredientObject} (Data: {CurrentIngredientData})");
 
     }
 }

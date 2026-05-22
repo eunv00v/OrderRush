@@ -51,7 +51,7 @@ public class Stove : CookingToolBase
             _cookingElapsedTime = 0f;
 
             // 주황색으로 색상 변경 (오버쿡)
-            _gaugePresenter?.SetColor(new Color(1f, 0.5f, 0f));
+            _gaugePresenter?.SetWarning(true);
 
             // 오버쿡 타이머
             while (_cookingElapsedTime < _gameDataService.Config.ToolProcessSeconds)
