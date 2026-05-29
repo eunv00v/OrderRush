@@ -1,27 +1,38 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using OrderRush.Data;
 using OrderRush.Services;
 using UnityEngine;
 
 public class LevelContextPresenter : ILevelContextPresenter, IDisposable
 {
     private readonly LevelFactory _levelFactory;
+    private readonly IAccountService _accountService;
+    private readonly IGameDataService _gameDataService;
+    private readonly SpawnFactory _spawnFactory;
 
     private LevelContext _view;
 
     public int LevelNumber { get; private set; } = 1;
 
-    public IReadOnlyList<DiningTable> DiningTables => _view?.DiningTables ?? Array.Empty<DiningTable>();
+    public List<DiningTable> DiningTables => _view?.DiningTables ?? new List<DiningTable>();
     public Vector3 SpawnPosition => _view != null ? _view.SpawnPoint.position : Vector3.zero;
     public Vector3 WaitingPosition => _view != null ? _view.WaitingPoint.position : Vector3.zero;
     public Quaternion WaitingRotation => _view != null ? _view.WaitingPoint.rotation : Quaternion.identity;
     public Transform LevelTransform => _view != null ? _view.transform : null;
 
 
-    public LevelContextPresenter(LevelFactory levelFactory)
+    public LevelContextPresenter(
+        LevelFactory levelFactory,
+        IAccountService accountService,
+        IGameDataService gameDataService,
+        SpawnFactory spawnFactory)
     {
         _levelFactory = levelFactory;
+        _accountService = accountService;
+        _gameDataService = gameDataService;
+        _spawnFactory = spawnFactory;
     }
 
     public async UniTask LoadLevelContext(int levelNumber)
@@ -35,6 +46,47 @@ public class LevelContextPresenter : ILevelContextPresenter, IDisposable
             return;
         }
         _view = levelContext;
+
+        await RestorePurchasedTables();
+    }
+
+    private async UniTask RestorePurchasedTables()
+    {
+        var purchasedCardIDs = _accountService.GetPurchasedCardIDs();
+
+        foreach (var cardID in purchasedCardIDs)
+        {
+            var card = _gameDataService.Cards.GetCard(cardID);
+            if (card?.Effect == null)
+                continue;
+
+            switch (card.Effect.EffectType)
+            {
+                case EffectType.Table:
+                    await AddTableFromEffect((TableAdditionEffect)card.Effect);
+                    break;
+            }
+        }
+    }
+
+    private async UniTask AddTableFromEffect(TableAdditionEffect effect)
+    {
+        Transform spawnPoint = _view.GetNextTableSpawnPoint();
+        if (spawnPoint == null)
+        {
+            Debug.LogWarning("No more table spawn points available");
+            return;
+        }
+
+        var table = await _spawnFactory.CreatePersistent<DiningTable>(
+            effect.TablePrefabName,
+            spawnPoint.position,
+            spawnPoint);
+
+        if (table != null)
+        {
+            _view.AddDiningTable(table);
+        }
     }
 
     public void AddDiningTable(DiningTable table)

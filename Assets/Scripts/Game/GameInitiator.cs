@@ -7,21 +7,21 @@ using VContainer.Unity;
 
 public class GameInitiator : IStartable
 {
-    private readonly IGameDataService _gameDataService;
     private readonly ILevelContextPresenter _levelPresenter;
     private readonly IDayProgressService _dayProgressService;
     private readonly ICustomerService _customerService;
+    private readonly IAccountService _accountService;
 
     public GameInitiator(
-        IGameDataService gameDataService,
         ILevelContextPresenter levelPresenter,
         IDayProgressService dayProgressService,
-        ICustomerService customerService)
+        ICustomerService customerService,
+        IAccountService accountService)
     {
-        _gameDataService = gameDataService;
         _levelPresenter = levelPresenter;
         _dayProgressService = dayProgressService;
         _customerService = customerService;
+        _accountService = accountService;
     }
 
     public async void Start()
@@ -29,7 +29,9 @@ public class GameInitiator : IStartable
         Debug.Log("GameInitiator: Initializing game...");
 
         await _dayProgressService.Initialize();
-        _dayProgressService.StartDay(1);
+
+        int currentDay = _accountService.Account.CurrentDay;
+        _dayProgressService.StartDay(currentDay);
 
         await _levelPresenter.LoadLevelContext(1);
 

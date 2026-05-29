@@ -30,15 +30,8 @@ namespace OrderRush.Services
 
         public List<CardData> GetRandomCardsForSelection(int count)
         {
-            var excludeIDs = _purchasedCardIDs
-                .Where(id =>
-                {
-                    var card = _gameDataService.Cards.GetCard(id);
-                    return card != null && card.IsExpiring;
-                })
-                .ToList();
-
-            return _gameDataService.Cards.GetRandomCards(count, excludeIDs);
+            var allCards = _gameDataService.Cards.Cards;
+            return allCards.OrderBy(x => UnityEngine.Random.value).Take(count).ToList();
         }
 
         public async UniTask<bool> TryPurchaseCard(CardData card)

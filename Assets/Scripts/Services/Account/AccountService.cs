@@ -34,21 +34,6 @@ namespace OrderRush.Services
         public void Initialize()
         {
             Load();
-
-            if (Account.OwnedRecipeIDs.Count == 0)
-            {
-                var defaultRecipe = _gameDataService.Recipes.Recipes.Find(r => r.IsDefaultRecipe);
-                if (defaultRecipe != null)
-                {
-                    Account.OwnedRecipeIDs.Add(defaultRecipe.RecipeID);
-                    Save();
-                }
-                else
-                {
-                    Debug.LogWarning("No default recipe found in RecipesData!");
-                }
-            }
-
             SetOwnedRecipesCache();
 
             _paymentSubscriber

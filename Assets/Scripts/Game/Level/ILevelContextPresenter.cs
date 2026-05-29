@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ILevelContextPresenter
 {
-    IReadOnlyList<DiningTable> DiningTables { get; }
+    List<DiningTable> DiningTables { get; }
     Vector3 SpawnPosition { get; }
     Vector3 WaitingPosition { get; }
     Quaternion WaitingRotation { get; }

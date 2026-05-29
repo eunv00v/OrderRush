@@ -11,10 +11,4 @@ public class CardsData : ScriptableObject
     {
         return Cards.Find(c => c.CardID == cardID);
     }
-
-    public List<CardData> GetRandomCards(int count, List<int> excludeIDs)
-    {
-        var availableCards = Cards.Where(c => !excludeIDs.Contains(c.CardID)).ToList();
-        return availableCards.OrderBy(x => Random.value).Take(count).ToList();
-    }
 }
