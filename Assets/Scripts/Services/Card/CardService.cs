@@ -41,7 +41,7 @@ namespace OrderRush.Services
 
             await _effectApplier.ApplyEffect(card.Effect);
 
-            if (card.IsExpiring)
+            if (!card.IsExpiring)
             {
                 _purchasedCardIDs.Add(card.CardID);
                 _accountService.AddPurchasedCard(card.CardID);
