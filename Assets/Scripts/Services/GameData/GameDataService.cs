@@ -24,8 +24,8 @@ namespace OrderRush.Services
         public async UniTask Initialize()
         {
             _config = await _resourcesLoader.LoadAsync<GameConfig>(DataKeys.GetDataPath(DataKeys.GameConfig));
-            _recipesData = await _resourcesLoader.LoadAsync<RecipesData>(DataKeys.GetDataPath(DataKeys.Recipes));
-            _cardsData = await _resourcesLoader.LoadAsync<CardsData>(DataKeys.GetDataPath(DataKeys.Cards));
+            _recipesData = await _resourcesLoader.LoadAsync<RecipesData>(DataKeys.GetDataPath(DataKeys.RecipesData));
+            _cardsData = await _resourcesLoader.LoadAsync<CardsData>(DataKeys.GetDataPath(DataKeys.CardsData));
             _daysData = await _resourcesLoader.LoadAsync<DaysData>(DataKeys.GetDataPath(DataKeys.Run1_Days));
         }
     }

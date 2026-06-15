@@ -107,7 +107,7 @@ public class ResourceKeysGenerator
         foreach (var assetPath in assetPathList)
         {
             var fileName = Path.GetFileNameWithoutExtension(assetPath);
-            var keyName = GetDataKeyName(assetPath, fileName);
+            var keyName = fileName;
             sb.AppendLine($"    public const string {keyName} = \"{keyName}\";");
         }
 
@@ -119,7 +119,7 @@ public class ResourceKeysGenerator
         foreach (var assetPath in assetPathList)
         {
             var fileName = Path.GetFileNameWithoutExtension(assetPath);
-            var keyName = GetDataKeyName(assetPath, fileName);
+            var keyName = fileName;
             sb.AppendLine("        { " + keyName + ", \"" + assetPath + "\" },");
         }
 
@@ -137,13 +137,4 @@ public class ResourceKeysGenerator
         return sb.ToString();
     }
 
-    private static string GetDataKeyName(string assetPath, string fileName)
-    {
-        if (assetPath.Contains("/Ingredient/"))
-            return "Ingredient_" + fileName;
-        else if (assetPath.Contains("/Recipe/"))
-            return "Recipe_" + fileName;
-        else
-            return fileName; // Stage 등 나머지는 접두사 없이
-    }
 }
