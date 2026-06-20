@@ -1,28 +1,29 @@
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+using MessagePipe;
+using VContainer;
 
-public class ServingCounter : MonoBehaviour
+public class ServingCounter : Counter
 {
-    [SerializeField] Counter[] _slots;
+    private IPublisher<PlateOnCounterEvent> _plateOnCounterPublisher;
 
-    public bool HasPlate => _slots.Any(s => s.HasItem && s.CurrentItem is Plate);
-
-    public Counter FindSlotWithMatchingPlate(List<RecipeData> pendingRecipes)
+    [Inject]
+    public void Construct(IPublisher<PlateOnCounterEvent> plateOnCounterPublisher)
     {
-        foreach (var slot in _slots)
-        {
-            if (!slot.HasItem || slot.CurrentItem is not Plate plate) continue;
+        _plateOnCounterPublisher = plateOnCounterPublisher;
+    }
 
-            var ingredientDatas = plate.PlacedIngredients.Select(i => i.Data).ToList();
+    void Start()
+    {
+        ItemPlaced += OnItemPlaced;
+    }
 
-            foreach (var recipe in pendingRecipes)
-            {
-                if (recipe.IsComplete(ingredientDatas))
-                    return slot;
-            }
-        }
+    void OnDestroy()
+    {
+        ItemPlaced -= OnItemPlaced;
+    }
 
-        return null;
+    private void OnItemPlaced(Counter counter)
+    {
+        if (CurrentItem is Plate)
+            _plateOnCounterPublisher.Publish(new PlateOnCounterEvent(this));
     }
 }

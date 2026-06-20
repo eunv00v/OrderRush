@@ -19,6 +19,11 @@ namespace OrderRush.Data
         [SerializeField] private float _tipRatio = 0.1f;
         [SerializeField] private float _eatDuration = 5f;
 
+        [Header("Spawn Settings")]
+        [SerializeField] private float _spawnBufferDuration = 10f;
+        [Range(0f, 1f)]
+        [SerializeField] private float _defaultSpawnClusterStrength = 1f;
+
         [Header("Tool Settings")]
         [SerializeField] private float _toolProcessSeconds = 5f;
 
@@ -29,6 +34,8 @@ namespace OrderRush.Data
         public List<int> RefreshCosts => _refreshCosts;
         public float TipRatio => _tipRatio;
         public float EatDuration => _eatDuration;
+        public float SpawnBufferDuration => _spawnBufferDuration;
+        public float DefaultSpawnClusterStrength => _defaultSpawnClusterStrength;
         public float ToolProcessSeconds => _toolProcessSeconds;
 
         public int GetRefreshCost(int refreshCount)

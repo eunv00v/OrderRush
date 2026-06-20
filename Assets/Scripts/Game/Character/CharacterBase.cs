@@ -41,7 +41,7 @@ public abstract class CharacterBase : MonoBehaviour
         _currentCarriable = null;
     }
 
-    void OnDestroy()
+    protected virtual void OnDestroy()
     {
         _dayEndedSubscription?.Dispose();
         _gameCleanupSubscription?.Dispose();

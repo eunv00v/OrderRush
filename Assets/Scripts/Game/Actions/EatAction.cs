@@ -3,7 +3,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using MessagePipe;
 using OrderRush.Services;
-using UnityEngine;
 
 public class EatAction : IGameAction
 {
@@ -21,16 +20,15 @@ public class EatAction : IGameAction
     public async UniTask ExecuteAsync(CancellationToken ct)
     {
         if (_customer == null || _customer.gameObject == null)
-        {
             return;
-        }
 
         await UniTask.Delay(TimeSpan.FromSeconds(_gameDataService.Config.EatDuration), cancellationToken: ct);
 
-        if (_customer != null && _customer.gameObject != null && _customer.Order?.Recipe != null)
+        if (_customer != null && _customer.gameObject != null && _customer.OrderedRecipeID != -1)
         {
-            int amount = _customer.Order.Recipe.SellPrice;
-            _paymentPublisher.Publish(new PaymentEvent(amount, _customer.Order.Recipe.RecipeName));
+            var recipe = _gameDataService.GetRecipeByID(_customer.OrderedRecipeID);
+            if (recipe != null)
+                _paymentPublisher.Publish(new PaymentEvent(recipe.SellPrice, recipe.RecipeName));
         }
     }
 }

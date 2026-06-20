@@ -10,14 +10,16 @@ using UnityEngine;
 public class CustomerService : ICustomerService
 {
     private readonly ILevelContextPresenter _levelPresenter;
-    private float _spawnInterval;
     private readonly SpawnFactory _spawnFactory;
     private readonly IDayProgressService _dayProgressService;
+    private readonly IGameDataService _gameDataService;
     private readonly ISubscriber<GameCleanupEvent> _gameCleanupSubscriber;
     private readonly ISubscriber<CustomerRemovedEvent> _customerServedSubscriber;
-    private int _nextSpawnIndex;
+    private float _timeBarDuration;
+    private int _customersSpawned;
     private int _maxCustomers;
     private int _maxGroupSize;
+    private float _spawnClusterStrength;
     private float _lastCheckedElapsed;
     private int _servedCustomersCount;
 
@@ -30,12 +32,14 @@ public class CustomerService : ICustomerService
         ILevelContextPresenter levelPresenter,
         SpawnFactory spawnFactory,
         IDayProgressService dayProgressService,
+        IGameDataService gameDataService,
         ISubscriber<GameCleanupEvent> gameCleanupSubscriber,
         ISubscriber<CustomerRemovedEvent> customerServedSubscriber)
     {
         _levelPresenter = levelPresenter;
         _spawnFactory = spawnFactory;
         _dayProgressService = dayProgressService;
+        _gameDataService = gameDataService;
         _gameCleanupSubscriber = gameCleanupSubscriber;
         _customerServedSubscriber = customerServedSubscriber;
     }
@@ -46,12 +50,12 @@ public class CustomerService : ICustomerService
         var daysData = _dayProgressService.CurrentDaysData;
 
         int dayNumber = currentDay.DayNumber;
-        float timeBarDuration = daysData.GetTimeBarDuration(dayNumber);
+        _timeBarDuration = daysData.GetTimeBarDuration(dayNumber);
         _maxCustomers = daysData.GetMaxCustomers(dayNumber);
 
-        _spawnInterval = timeBarDuration / _maxCustomers;
-        _nextSpawnIndex = 0;
-        _maxGroupSize = 1;
+        _customersSpawned = 0;
+        _maxGroupSize = 2;
+        _spawnClusterStrength = _gameDataService.Config.DefaultSpawnClusterStrength;
         _lastCheckedElapsed = -1f;
         _servedCustomersCount = 0;
 
@@ -84,7 +88,7 @@ public class CustomerService : ICustomerService
     private void OnGameCleanup()
     {
         _waitingList.Clear();
-        _nextSpawnIndex = 0;
+        _customersSpawned = 0;
         _lastCheckedElapsed = -1f;
         _servedCustomersCount = 0;
 
@@ -92,9 +96,9 @@ public class CustomerService : ICustomerService
         var daysData = _dayProgressService.CurrentDaysData;
 
         int dayNumber = currentDay.DayNumber;
-        float timeBarDuration = daysData.GetTimeBarDuration(dayNumber);
+        _timeBarDuration = daysData.GetTimeBarDuration(dayNumber);
         _maxCustomers = daysData.GetMaxCustomers(dayNumber);
-        _spawnInterval = timeBarDuration / _maxCustomers;
+        _spawnClusterStrength = _gameDataService.Config.DefaultSpawnClusterStrength;
     }
 
     public void Dispose()
@@ -105,22 +109,38 @@ public class CustomerService : ICustomerService
 
     private async void CheckAndSpawn(float elapsed)
     {
-        if (_nextSpawnIndex >= _maxCustomers) return;
+        if (_customersSpawned >= _maxCustomers) return;
 
-        float nextSpawnTime = _nextSpawnIndex * _spawnInterval;
+        float nextSpawnTime = GetSpawnTime(_customersSpawned);
 
         if (_lastCheckedElapsed < nextSpawnTime && elapsed >= nextSpawnTime)
         {
             _lastCheckedElapsed = elapsed;
-            await TrySpawn();
-            _nextSpawnIndex++;
+            int groupSize = Mathf.Min(
+                UnityEngine.Random.Range(1, _maxGroupSize + 1),
+                _maxCustomers - _customersSpawned);
+            _customersSpawned += groupSize;
+            await TrySpawn(groupSize);
         }
     }
 
-    private async UniTask TrySpawn()
+    private float GetSpawnTime(int customerIndex)
     {
-        int groupSize = UnityEngine.Random.Range(1, _maxGroupSize + 1);
+        float buffer = _gameDataService.Config.SpawnBufferDuration;
+        float window = _timeBarDuration - 2f * buffer;
+        float progress = _maxCustomers > 1 ? customerIndex / (float)(_maxCustomers - 1) : 0f;
+        return buffer + Distribute(progress) * window;
+    }
 
+    // 중반 집중 분포: strength 0 = 균등, 1 = 주간(중반) 몰림 (1 초과 시 단조성 붕괴)
+    private float Distribute(float p)
+    {
+        float strength = Mathf.Clamp01(_spawnClusterStrength);
+        return p + (strength / (2f * Mathf.PI)) * Mathf.Sin(2f * Mathf.PI * p);
+    }
+
+    private async UniTask TrySpawn(int groupSize)
+    {
         if (_waitingList.Count > 0)
         {
             await SpawnToWaitingQueue(groupSize);

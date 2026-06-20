@@ -13,10 +13,10 @@ namespace OrderRush.Services
         void SpendCoins(int amount);
         bool TrySpendCoins(int amount);
         void AddOwnedRecipe(int recipeID);
-        RecipeData GetRandomOwnedRecipe();
+        int GetRandomOwnedRecipeID();
         void SetCurrentProgress(int day);
         void AddPurchasedCard(int cardID);
-        IReadOnlyList<int> GetPurchasedCardIDs();
+        List<int> GetPurchasedCardIDs();
         void ResetAll();
     }
 }

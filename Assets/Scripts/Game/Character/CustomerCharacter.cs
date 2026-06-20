@@ -7,7 +7,8 @@ using VContainer;
 
 public class CustomerCharacter : CharacterBase
 {
-    public Order Order { get; set; }
+    public int OrderedRecipeID { get; set; } = -1;
+    public float OrderedTime { get; set; }
     public DiningTable AssignedTable { get; private set; }
     public int AssignedSeatIndex { get; private set; }
     public bool IsServed { get; set; }
@@ -98,18 +99,16 @@ public class CustomerCharacter : CharacterBase
 
     public void EnqueueTakeOrder()
     {
-        if (Order != null)
-        {
+        if (OrderedRecipeID != -1)
             return;
-        }
 
         if (_actionExecutor.CurrentAction is WaitForOrderAction)
         {
             _actionExecutor.CancelCurrentAction();
         }
 
-        EnqueueAction(new OrderAction(this, _accountService, _gameDataService));
-        EnqueueAction(new WaitForFoodAction(this, _orderIconFactory));
+        EnqueueAction(new OrderAction(this, _accountService));
+        EnqueueAction(new WaitForFoodAction(this, _orderIconFactory, _gameDataService));
     }
 
     public void EnqueueLeaveAngry()

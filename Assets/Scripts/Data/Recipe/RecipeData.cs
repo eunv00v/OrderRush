@@ -13,7 +13,7 @@ public class RecipeData : ScriptableObject
 
 
 
-    public bool IsComplete(List<IngredientData> placedIngredients)
+    public bool IsMatch(List<IngredientData> placedIngredients)
     {
         if (placedIngredients.Count != RequiredIngredients.Count)
             return false;
@@ -24,4 +24,5 @@ public class RecipeData : ScriptableObject
 
         return true;
     }
+
 }

@@ -17,7 +17,10 @@ public class LevelContextPresenter : ILevelContextPresenter, IDisposable
     public int LevelNumber { get; private set; } = 1;
 
     public List<DiningTable> DiningTables => _view?.DiningTables ?? new List<DiningTable>();
+    public ServingCounter[] ServingCounters => _view != null ? _view.ServingCounters : System.Array.Empty<ServingCounter>();
+    public Counter[] KitchenCounters => _view != null ? _view.KitchenCounters : System.Array.Empty<Counter>();
     public Vector3 SpawnPosition => _view != null ? _view.SpawnPoint.position : Vector3.zero;
+    public Transform[] StaffIdlePoints => _view?.StaffIdlePoints;
     public Vector3 WaitingPosition => _view != null ? _view.WaitingPoint.position : Vector3.zero;
     public Quaternion WaitingRotation => _view != null ? _view.WaitingPoint.rotation : Quaternion.identity;
     public Transform LevelTransform => _view != null ? _view.transform : null;
@@ -56,7 +59,7 @@ public class LevelContextPresenter : ILevelContextPresenter, IDisposable
 
         foreach (var cardID in purchasedCardIDs)
         {
-            var card = _gameDataService.Cards.GetCard(cardID);
+            var card = _gameDataService.GetCardByID(cardID);
             if (card?.Effect == null)
                 continue;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -7,6 +8,8 @@ public class Counter : InteractableBase
     [NotNull][SerializeField] Transform _slot;
 
     ICarriable _placedCarriable;
+
+    public event Action<Counter> ItemPlaced;
 
     public bool HasItem => _placedCarriable != null;
     public ICarriable CurrentItem => _placedCarriable;
@@ -38,6 +41,7 @@ public class Counter : InteractableBase
         else if (character.IsHolding && _placedCarriable == null)
         {
             _placedCarriable = await character.PutDownAt(_slot);
+            ItemPlaced?.Invoke(this);
         }
         else if (!character.IsHolding && _placedCarriable != null)
         {

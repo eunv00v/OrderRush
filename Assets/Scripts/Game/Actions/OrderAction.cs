@@ -7,25 +7,21 @@ public class OrderAction : IGameAction
 {
     private readonly CustomerCharacter _character;
     private readonly IAccountService _accountService;
-    private readonly IGameDataService _gameDataService;
 
-    public OrderAction(CustomerCharacter character, IAccountService accountService, IGameDataService gameDataService)
+    public OrderAction(CustomerCharacter character, IAccountService accountService)
     {
         _character = character;
         _accountService = accountService;
-        _gameDataService = gameDataService;
     }
 
     public async UniTask ExecuteAsync(CancellationToken ct)
     {
         if (_character == null || _character.gameObject == null)
-        {
             return;
-        }
 
-        var recipe = _accountService.GetRandomOwnedRecipe();
+        int recipeID = _accountService.GetRandomOwnedRecipeID();
 
-        if (recipe == null)
+        if (recipeID == -1)
         {
             Debug.LogWarning("No owned recipes available!");
             return;
@@ -33,7 +29,8 @@ public class OrderAction : IGameAction
 
         if (_character != null && _character.gameObject != null)
         {
-            _character.Order = new Order(recipe, _gameDataService.Config.OrderWaitDuration);
+            _character.OrderedRecipeID = recipeID;
+            _character.OrderedTime = Time.time;
         }
 
         await UniTask.CompletedTask;

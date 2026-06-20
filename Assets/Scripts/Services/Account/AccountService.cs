@@ -14,7 +14,6 @@ namespace OrderRush.Services
         private readonly IGameDataService _gameDataService;
         private readonly ISubscriber<PaymentEvent> _paymentSubscriber;
         private readonly ISubscriber<DayEndedEvent> _dayEndedSubscriber;
-        private List<RecipeData> _ownedRecipes = new();
         private readonly CompositeDisposable _disposables = new();
 
         public Account Account { get; private set; } = new();
@@ -33,26 +32,16 @@ namespace OrderRush.Services
 
         public void Initialize()
         {
+            Account.OwnedRecipeIDs.AddRange(_gameDataService.GetDefaultRecipeIDs());
             Load();
-            SetOwnedRecipesCache();
 
             _paymentSubscriber
-                .Subscribe(OnPayment)
+                .Subscribe(evt => AddCoins(evt.Amount))
                 .AddTo(_disposables);
 
             _dayEndedSubscriber
-                .Subscribe(OnDayEnded)
+                .Subscribe(evt => SetCurrentProgress(evt.NextDay))
                 .AddTo(_disposables);
-        }
-
-        private void OnPayment(PaymentEvent evt)
-        {
-            AddCoins(evt.Amount);
-        }
-
-        private void OnDayEnded(DayEndedEvent evt)
-        {
-            SetCurrentProgress(evt.NextDay);
         }
 
         public void AddCoins(int amount)
@@ -62,7 +51,6 @@ namespace OrderRush.Services
                 Debug.LogError($"Cannot add negative coins: {amount}");
                 return;
             }
-
             Account.Coins.Value += amount;
             Save();
         }
@@ -74,13 +62,11 @@ namespace OrderRush.Services
                 Debug.LogError($"Cannot spend negative coins: {amount}");
                 return;
             }
-
             if (Account.Coins.Value < amount)
             {
                 Debug.LogError($"Not enough coins. Have: {Account.Coins.Value}, Need: {amount}");
                 return;
             }
-
             Account.Coins.Value -= amount;
             Save();
         }
@@ -89,7 +75,6 @@ namespace OrderRush.Services
         {
             if (amount < 0 || Account.Coins.Value < amount)
                 return false;
-
             Account.Coins.Value -= amount;
             Save();
             return true;
@@ -99,24 +84,15 @@ namespace OrderRush.Services
         {
             if (Account.OwnedRecipeIDs.Contains(recipeID))
                 return;
-
             Account.OwnedRecipeIDs.Add(recipeID);
-
-            var recipe = _gameDataService.Recipes.Recipes.Find(r => r.RecipeID == recipeID);
-            if (recipe != null && !_ownedRecipes.Contains(recipe))
-            {
-                _ownedRecipes.Add(recipe);
-            }
-
             Save();
         }
 
-        public RecipeData GetRandomOwnedRecipe()
+        public int GetRandomOwnedRecipeID()
         {
-            if (_ownedRecipes.Count == 0)
-                return null;
-
-            return _ownedRecipes[UnityEngine.Random.Range(0, _ownedRecipes.Count)];
+            if (Account.OwnedRecipeIDs.Count == 0)
+                return -1;
+            return Account.OwnedRecipeIDs[UnityEngine.Random.Range(0, Account.OwnedRecipeIDs.Count)];
         }
 
         public void SetCurrentProgress(int day)
@@ -134,9 +110,9 @@ namespace OrderRush.Services
             }
         }
 
-        public IReadOnlyList<int> GetPurchasedCardIDs()
+        public List<int> GetPurchasedCardIDs()
         {
-            return Account.PurchasedCardIDs.AsReadOnly();
+            return Account.PurchasedCardIDs;
         }
 
         public void ResetAll()
@@ -149,8 +125,7 @@ namespace OrderRush.Services
             Account.OwnedRecipeIDs.Clear();
             Account.PurchasedCardIDs.Clear();
 
-            _ownedRecipes.Clear();
-            SetOwnedRecipesCache();
+            Account.OwnedRecipeIDs.AddRange(_gameDataService.GetDefaultRecipeIDs());
         }
 
         private void Save()
@@ -174,9 +149,9 @@ namespace OrderRush.Services
             string recipeIDs = _storage.LoadString(LocalStorageKeys.AccountOwnedRecipes, "");
             if (!string.IsNullOrEmpty(recipeIDs))
             {
-                Account.OwnedRecipeIDs = recipeIDs.Split(',')
-                    .Select(int.Parse)
-                    .ToList();
+                foreach (var id in recipeIDs.Split(',').Select(int.Parse))
+                    if (!Account.OwnedRecipeIDs.Contains(id))
+                        Account.OwnedRecipeIDs.Add(id);
             }
 
             string cardIDs = _storage.LoadString(LocalStorageKeys.PurchasedCardIDs, "");
@@ -189,18 +164,6 @@ namespace OrderRush.Services
 
             Account.CurrentRun = _storage.LoadInt(LocalStorageKeys.CurrentRun, 1);
             Account.CurrentDay = _storage.LoadInt(LocalStorageKeys.CurrentDay, 1);
-        }
-
-        private void SetOwnedRecipesCache()
-        {
-            _ownedRecipes = _gameDataService.Recipes.Recipes
-                .Where(r => Account.OwnedRecipeIDs.Contains(r.RecipeID) || r.IsDefaultRecipe)
-                .ToList();
-
-            if (_ownedRecipes.Count == 0 && _gameDataService.Recipes.Recipes.Count > 0)
-            {
-                _ownedRecipes.Add(_gameDataService.Recipes.Recipes[0]);
-            }
         }
 
         public void Dispose()

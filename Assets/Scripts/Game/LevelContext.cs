@@ -1,21 +1,31 @@
 using System.Collections.Generic;
-using Unity.AI.Navigation;
+using System.Linq;
 using UnityEngine;
 
 public class LevelContext : MonoBehaviour
 {
-    [NotNull][SerializeField] DiningTable _diningTable;
+    [NotNull][SerializeField] Transform _interactablesRoot;
     [NotNull][SerializeField] Transform[] _tablePoints;
     [NotNull][SerializeField] Transform _spawnPoint;
     [NotNull][SerializeField] Transform _waitingPoint;
+    [NotNull][SerializeField] Transform[] _staffIdlePoints;
 
     public List<DiningTable> DiningTables { get; private set; }
+    public ServingCounter[] ServingCounters { get; private set; }
+    public Counter[] KitchenCounters { get; private set; }
     public Transform SpawnPoint => _spawnPoint;
     public Transform WaitingPoint => _waitingPoint;
+    public Transform[] StaffIdlePoints => _staffIdlePoints;
 
     void Awake()
     {
-        DiningTables = new List<DiningTable> { _diningTable };
+        DiningTables = new List<DiningTable>(_interactablesRoot.GetComponentsInChildren<DiningTable>());
+
+        ServingCounters = _interactablesRoot.GetComponentsInChildren<ServingCounter>();
+
+        KitchenCounters = _interactablesRoot.GetComponentsInChildren<Counter>()
+            .Where(c => c is not ServingCounter)
+            .ToArray();
     }
 
     public Transform GetNextTableSpawnPoint()

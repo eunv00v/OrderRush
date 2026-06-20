@@ -32,7 +32,7 @@ namespace OrderRush.Services
 
         public List<CardData> GetRandomCardsForSelection(int count)
         {
-            var allCards = _gameDataService.Cards.Cards;
+            var allCards = _gameDataService.GetAllCards();
             var pool = new List<CardData>(allCards);
             var result = new List<CardData>(count);
 
@@ -57,7 +57,7 @@ namespace OrderRush.Services
             return result;
         }
 
-        public int GetRefreshCost() => _gameDataService.Config.GetRefreshCost(_refreshCount);
+        public int GetRefreshCost() => _gameDataService.GetRefreshCost(_refreshCount);
 
         public async UniTask<List<CardData>> Refresh()
         {

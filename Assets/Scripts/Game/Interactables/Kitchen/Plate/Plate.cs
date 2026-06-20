@@ -2,19 +2,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using OrderRush.Services;
 using UnityEngine;
-using UnityEngine.UI;
 using VContainer;
 
 public class Plate : MonoBehaviour, ICarriable
 {
     [NotNull][SerializeField] Transform _ingredientSlot;
     [NotNull][SerializeField] GameObject _dirty;
-    List<IngredientObject> _placedIngredients = new();
+
+    private List<IngredientObject> _placedIngredients = new();
+    private IGameDataService _gameDataService;
 
     public List<IngredientObject> PlacedIngredients => _placedIngredients;
     public bool IsDirty { get; private set; }
+    public int MatchedRecipeID { get; private set; } = -1;
 
+    [Inject]
+    public void Construct(IGameDataService gameDataService)
+    {
+        _gameDataService = gameDataService;
+    }
 
     private void Awake()
     {
@@ -37,37 +45,37 @@ public class Plate : MonoBehaviour, ICarriable
         var ingredientObj = other as IngredientObject;
         if (ingredientObj == null) return false;
 
-        // 이미 같은 재료 있으면 거부
         if (_placedIngredients.Any(i => i.Data == ingredientObj.Data)) return false;
 
         ingredientObj.OnPutDown(_ingredientSlot);
         _placedIngredients.Add(ingredientObj);
-        SetDirty();
+        IsDirty = true;
+        UpdateMatchedRecipeID();
         return true;
     }
-
-
 
     public void RemoveEatenFood()
     {
         foreach (var ingredient in _placedIngredients)
-        {
             Destroy(ingredient.gameObject);
-        }
-        _placedIngredients.Clear();
-        _dirty.SetActive(true);
-    }
 
-    private void SetDirty()
-    {
-        IsDirty = true;
+        _placedIngredients.Clear();
+        MatchedRecipeID = -1;
         _dirty.SetActive(true);
     }
 
     public void SetClean()
     {
         IsDirty = false;
+        MatchedRecipeID = -1;
         _dirty.SetActive(false);
     }
 
+
+    private void UpdateMatchedRecipeID()
+    {
+        if (_gameDataService == null) return;
+        var ingredientDatas = _placedIngredients.Select(i => i.Data).ToList();
+        MatchedRecipeID = _gameDataService.GetMatchedRecipeID(ingredientDatas);
+    }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -9,6 +10,8 @@ public class ActionExecutor : MonoBehaviour
     public IGameAction CurrentAction { get; private set; }
     private CancellationTokenSource _executionCts;
     private bool _isExecuting;
+
+    public event Action ExecutionCompleted;
 
     void OnEnable()
     {
@@ -72,6 +75,9 @@ public class ActionExecutor : MonoBehaviour
                     _executionCts = null;
                     _isExecuting = false;
                     CurrentAction = null;
+
+                    if (_actionQueue.Count == 0)
+                        ExecutionCompleted?.Invoke();
                 }
             }
 

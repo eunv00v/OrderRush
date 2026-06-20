@@ -23,6 +23,8 @@ public class DiningTable : InteractableBase, IUpdatable
     private IGameDataService _gameDataService;
     private IDayProgressService _dayProgressService;
     private ICustomerService _customerService;
+    private IPublisher<OrderNeededEvent> _orderNeededPublisher;
+    private IPublisher<DirtyPlateEvent> _dirtyPlatePublisher;
 
     private int _seatedCount = 0;
     private float _elapsedWaitTime = 0f;
@@ -34,6 +36,39 @@ public class DiningTable : InteractableBase, IUpdatable
 
     public int MaxSeats => _seats.Length;
 
+    public bool HasCustomersNeedingOrder =>
+        _seats.Any(s => s.HasCustomer && s.CurrentCustomer.OrderedRecipeID == -1);
+
+    public bool HasDirtyPlate =>
+        _seatedCount == 0 && _currentPlates.Any(p => p != null && p.IsDirty);
+
+    public List<int> GetPendingRecipeIDs()
+    {
+        var ids = new List<int>();
+        foreach (var seat in _seats)
+        {
+            if (!seat.HasCustomer) continue;
+            var customer = seat.CurrentCustomer;
+            if (customer.OrderedRecipeID == -1 || customer.IsServed) continue;
+            ids.Add(customer.OrderedRecipeID);
+        }
+        return ids;
+    }
+
+    public float GetEarliestOrderTime(int recipeID)
+    {
+        float earliest = float.MaxValue;
+        foreach (var seat in _seats)
+        {
+            if (!seat.HasCustomer) continue;
+            var customer = seat.CurrentCustomer;
+            if (customer.IsServed || customer.OrderedRecipeID != recipeID) continue;
+            if (customer.OrderedTime < earliest)
+                earliest = customer.OrderedTime;
+        }
+        return earliest;
+    }
+
     [Inject]
     public void Construct(
         TableGaugeFactory gaugeFactory,
@@ -41,6 +76,8 @@ public class DiningTable : InteractableBase, IUpdatable
         IGameDataService gameDataService,
         IDayProgressService dayProgressService,
         ICustomerService customerService,
+        IPublisher<OrderNeededEvent> orderNeededPublisher,
+        IPublisher<DirtyPlateEvent> dirtyPlatePublisher,
         ISubscriber<DayEndedEvent> dayEndedSubscriber,
         ISubscriber<GameCleanupEvent> gameCleanupSubscriber)
     {
@@ -49,6 +86,8 @@ public class DiningTable : InteractableBase, IUpdatable
         _gameDataService = gameDataService;
         _dayProgressService = dayProgressService;
         _customerService = customerService;
+        _orderNeededPublisher = orderNeededPublisher;
+        _dirtyPlatePublisher = dirtyPlatePublisher;
 
         dayEndedSubscriber
             .Subscribe(_ => OnDayEnded())
@@ -136,6 +175,7 @@ public class DiningTable : InteractableBase, IUpdatable
             StartWaitGauge();
         }
 
+        _orderNeededPublisher.Publish(new OrderNeededEvent(this));
     }
 
 
@@ -244,6 +284,10 @@ public class DiningTable : InteractableBase, IUpdatable
             {
                 _customerService.OnTableAvailable(this);
             }
+            else if (HasDirtyPlate)
+            {
+                _dirtyPlatePublisher.Publish(new DirtyPlateEvent(this));
+            }
         }
     }
 
@@ -265,25 +309,35 @@ public class DiningTable : InteractableBase, IUpdatable
     {
         Debug.Log($"[DiningTable] InteractAsync START - character: {character.name}, IsHolding: {character.IsHolding}, IsWaitingFood: {_isWaitingFood}");
 
-        if (_seatedCount == 0 && !character.IsHolding)
+        if (_seatedCount == 0)
         {
-            // 더러운 접시 찾기
-            for (int i = 0; i < _currentPlates.Count; i++)
+            if (!character.IsHolding)
             {
-                var plate = _currentPlates[i];
-                if (plate != null && plate.IsDirty)
+                // 더러운 접시 찾기
+                for (int i = 0; i < _currentPlates.Count; i++)
                 {
-                    await character.PickUp(plate);
-                    _currentPlates[i] = null;
-
-                    if (IsEmptyTable())
+                    var plate = _currentPlates[i];
+                    if (plate != null && plate.IsDirty)
                     {
-                        _customerService.OnTableAvailable(this);
-                    }
+                        await character.PickUp(plate);
+                        _currentPlates[i] = null;
 
-                    return;
+                        if (IsEmptyTable())
+                        {
+                            _customerService.OnTableAvailable(this);
+                        }
+                        else if (HasDirtyPlate)
+                        {
+                            _dirtyPlatePublisher.Publish(new DirtyPlateEvent(this));
+                        }
+
+                        return;
+                    }
                 }
             }
+
+            // 빈 테이블에서는 주문/서빙으로 진행하지 않음
+            return;
         }
 
 
@@ -346,30 +400,39 @@ public class DiningTable : InteractableBase, IUpdatable
             return;
         }
 
-        var ingredientDatas = plate.PlacedIngredients.Select(obj => obj.Data).ToList();
+        if (plate.MatchedRecipeID == -1) return;
 
+        DiningSeat targetSeat = null;
+        float earliestTime = float.MaxValue;
         foreach (var seat in _seats)
         {
             if (!seat.HasCustomer) continue;
 
             var customer = seat.CurrentCustomer;
-            if (customer.Order != null &&
-                !customer.Order.IsCompleted &&
-                customer.Order.Recipe.IsComplete(ingredientDatas))
+            if (customer.IsServed || customer.OrderedRecipeID != plate.MatchedRecipeID) continue;
+
+            if (customer.OrderedTime < earliestTime)
             {
-                await character.PutDown();
-                PlacePlate(seat.GetSeatIndex(), plate);
-
-                customer.Order.Complete();
-                ExtendGaugeTime();
-                ProcessServingComplete();
-
-                Debug.Log($"[DiningTable] Food served to {customer.name}");
-                return;
+                earliestTime = customer.OrderedTime;
+                targetSeat = seat;
             }
         }
 
-        Debug.Log("[DiningTable] No matching order found for this food");
+        if (targetSeat == null)
+        {
+            Debug.Log("[DiningTable] No matching order found for this food");
+            return;
+        }
+
+        var targetCustomer = targetSeat.CurrentCustomer;
+        await character.PutDown();
+        PlacePlate(targetSeat.GetSeatIndex(), plate);
+
+        targetCustomer.IsServed = true;
+        ExtendGaugeTime();
+        ProcessServingComplete();
+
+        Debug.Log($"[DiningTable] Food served to {targetCustomer.name}");
     }
 
     private bool CheckAllServed()
@@ -377,11 +440,9 @@ public class DiningTable : InteractableBase, IUpdatable
         foreach (var seat in _seats)
         {
             if (seat.HasCustomer &&
-                seat.CurrentCustomer.Order != null &&
-                !seat.CurrentCustomer.Order.IsCompleted)
-            {
+                seat.CurrentCustomer.OrderedRecipeID != -1 &&
+                !seat.CurrentCustomer.IsServed)
                 return false;
-            }
         }
         return true;
     }

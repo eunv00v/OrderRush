@@ -12,19 +12,22 @@ public class GameInitiator : IStartable
     private readonly ICustomerService _customerService;
     private readonly IAccountService _accountService;
     private readonly CardEffectApplier _cardEffectApplier;
+    private readonly StaffManager _staffManager;
 
     public GameInitiator(
         ILevelContextPresenter levelPresenter,
         IDayProgressService dayProgressService,
         ICustomerService customerService,
         IAccountService accountService,
-        CardEffectApplier cardEffectApplier)
+        CardEffectApplier cardEffectApplier,
+        StaffManager staffManager)
     {
         _levelPresenter = levelPresenter;
         _dayProgressService = dayProgressService;
         _customerService = customerService;
         _accountService = accountService;
         _cardEffectApplier = cardEffectApplier;
+        _staffManager = staffManager;
     }
 
     public async void Start()
@@ -41,6 +44,7 @@ public class GameInitiator : IStartable
         await _cardEffectApplier.ApplyAllPurchasedCards();
 
         _customerService.Initialize();
+        _staffManager.Initialize();
 
         Debug.Log("GameInitiator: Game initialized!");
     }

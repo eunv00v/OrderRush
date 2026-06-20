@@ -28,11 +28,9 @@ namespace OrderRush.Services
         public async UniTask ApplyAllPurchasedCards()
         {
             var purchasedIDs = _accountService.GetPurchasedCardIDs();
-            var allCards = _gameDataService.Cards.Cards;
-
             foreach (var id in purchasedIDs)
             {
-                var card = allCards.Find(c => c.CardID == id);
+                var card = _gameDataService.GetCardByID(id);
                 if (card != null)
                 {
                     await ApplyEffect(card.Effect);
@@ -54,6 +52,7 @@ namespace OrderRush.Services
                     ApplyUpgrade((UpgradeCardEffect)effect);
                     break;
                 case EffectType.StaffHire:
+                    await ApplyStaffHire((StaffCardEffect)effect);
                     break;
                 case EffectType.OvercookExtend:
                     ApplyOvercookExtend((OvercookCardEffect)effect);
@@ -74,6 +73,14 @@ namespace OrderRush.Services
             {
                 _levelPresenter.AddDiningTable(table);
             }
+        }
+
+        private async UniTask ApplyStaffHire(StaffCardEffect effect)
+        {
+            var staff = await _spawnFactory.Create<StaffCharacter>(effect.StaffPrefabName);
+            if (staff == null) return;
+
+            staff.WarpTo(_levelPresenter.SpawnPosition);
         }
 
         private void ApplyMenuUnlock(MenuCardEffect effect)
