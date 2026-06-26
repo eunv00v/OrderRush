@@ -7,7 +7,7 @@ using OrderRush.Services;
 
 public class ProjectLifetimeScope : LifetimeScope
 {
-    [SerializeField] UpdateSubscriptionService _updateService;
+    [NotNull][SerializeField] UpdateSubscriptionService _updateService;
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterMessagePipe();

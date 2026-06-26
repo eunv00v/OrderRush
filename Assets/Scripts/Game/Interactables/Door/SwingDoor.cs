@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SwingDoor : MonoBehaviour
 {
-    [SerializeField] Transform _leftDoor;
-    [SerializeField] Transform _rightDoor;
+    [NotNull][SerializeField] Transform _leftDoor;
+    [NotNull][SerializeField] Transform _rightDoor;
     [SerializeField] float _openAngle = 90f;
     [SerializeField] float _duration = 0.3f;
 

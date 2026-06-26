@@ -21,7 +21,7 @@ namespace OrderRush.Data
 
         [Header("Behavior")]
         [SerializeField] private bool _givesTip;
-        [SerializeField] private RecipeData _preferredRecipe;
+        [NotNull][SerializeField] private RecipeData _preferredRecipe;
 
         public CustomerCharacterType CharacterType => _characterType;
         public float PatienceMultiplier => _patienceMultiplier;

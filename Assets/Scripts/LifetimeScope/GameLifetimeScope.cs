@@ -5,8 +5,8 @@ using VContainer.Unity;
 
 public class GameLifetimeScope : LifetimeScope
 {
-    [SerializeField] Transform _root;
-    [SerializeField] RectTransform _gaugeContainer;
+    [NotNull][SerializeField] Transform _root;
+    [NotNull][SerializeField] RectTransform _gaugeContainer;
 
     protected override void Configure(IContainerBuilder builder)
     {
