@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace OrderRush.Services
 {
@@ -43,7 +42,7 @@ namespace OrderRush.Services
             switch (effect.EffectType)
             {
                 case EffectType.Table:
-                    await ApplyTableAddition((TableAdditionEffect)effect);
+                    await _levelPresenter.AddTableFromEffect((TableAdditionEffect)effect);
                     break;
                 case EffectType.Menu:
                     ApplyMenuUnlock((MenuCardEffect)effect);
@@ -57,21 +56,6 @@ namespace OrderRush.Services
                 case EffectType.OvercookExtend:
                     ApplyOvercookExtend((OvercookCardEffect)effect);
                     break;
-            }
-        }
-
-        private async UniTask ApplyTableAddition(TableAdditionEffect effect)
-        {
-            Vector3 position = CalculateNewTablePosition();
-
-            var table = await _spawnFactory.CreatePersistent<DiningTable>(
-                effect.TablePrefabName,
-                position,
-                _levelPresenter.LevelTransform);
-
-            if (table != null)
-            {
-                _levelPresenter.AddDiningTable(table);
             }
         }
 
@@ -96,16 +80,6 @@ namespace OrderRush.Services
         private void ApplyOvercookExtend(OvercookCardEffect effect)
         {
             _kitchenStatService.AddOvercookExtend(effect.ExtendPercent);
-        }
-
-        private Vector3 CalculateNewTablePosition()
-        {
-            var tables = _levelPresenter.DiningTables;
-            if (tables.Count == 0)
-                return Vector3.zero;
-
-            var lastTable = tables[tables.Count - 1];
-            return lastTable.transform.position + new Vector3(2f, 0, 0);
         }
     }
 }

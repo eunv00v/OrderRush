@@ -4262,6 +4262,7 @@ MonoBehaviour:
   _skipButton: {fileID: 718946683}
   _refreshButton: {fileID: 821150571}
   _refreshCostText: {fileID: 1372995281}
+  _coinsText: {fileID: 1474579124}
 --- !u!1 &1668975811
 GameObject:
   m_ObjectHideFlags: 0

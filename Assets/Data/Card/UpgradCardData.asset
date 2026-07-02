@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24557a6810ac54611a707288499f3dfe, type: 3}
   m_Name: UpgradCardData
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  CardID: 0
+  CardID: 2
   CardName: Speed Up
-  Description: 
+  Description: Slightly speeds up all cooking tools
   Icon: {fileID: 0}
   Cost: 0
   Weight: 10
